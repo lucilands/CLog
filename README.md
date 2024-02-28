@@ -36,6 +36,7 @@ clog_mute_level(CLOG_INFO);
 This example will log "Hello, World" into a file called "log.log"
 
 ```C
+#include <stdio.h>
 #include "clog.h"
 
 int main(void) {
