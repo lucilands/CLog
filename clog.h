@@ -15,13 +15,24 @@ typedef enum {
 } ClogLevel;
 
 
+#define CLOG_INIT clog_output_fd = stdout
+
 #define clog_mute_level(lvl) clog_muted_level = lvl
-#define clog(level, ...) if (level > clog_muted_level) { \
+#define clog_set_output(output_fd) clog_output_fd = output_fd
+
+#define clog(level, ...) if (level > clog_muted_level && clog_output_fd == stdout) { \
                             printf("%s[%s]: \e[0m", clog_get_level_color(level), clog_get_level_string(level)); \
                             printf(__VA_ARGS__); \
+                        } \
+                        else if (level > clog_muted_level && clog_output_fd != stdout) { \
+                            fprintf(clog_output_fd, "[%s]: ", clog_get_level_string(level)); \
+                            fprintf(clog_output_fd, __VA_ARGS__); \
                         }
 
 extern ClogLevel clog_muted_level;
+extern FILE *clog_output_fd;
+
+FILE *clog_output_fd = 0;
 ClogLevel clog_muted_level = CLOG_NONE;
 
 const char *clog_get_level_string(ClogLevel level);
