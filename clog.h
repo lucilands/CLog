@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// TODO: Find a way to remove CLOG_INIT
+
 typedef enum {
     CLOG_NONE    = -1,
     CLOG_DEBUG   =  0,

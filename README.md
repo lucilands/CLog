@@ -7,6 +7,8 @@ CLog uses a basic macro for logging, and an enum for the different levels of log
 #include "clog.h"
 
 int main(void) {
+    CLOG_INIT;
+
     clog(CLOG_DEBUG,   "Hello from CLog!\n");
     clog(CLOG_TRACE,   "Hello from CLog!\n");
     clog(CLOG_INFO,    "Hello from CLog!\n");
