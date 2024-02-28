@@ -19,3 +19,13 @@ int main(void) {
 The output of this would look something this:
 
 ![Demo output](img/demo-output.png)
+
+## Muting log levels
+If you add this simple line to the demo, every message lower or equal too the info level, this includes:
+ - CLOG_INFO
+ - CLOG_TRACE
+ - CLOG_DEBUG
+Will not be logged
+```C 
+clog_mute_level(CLOG_INFO);
+```

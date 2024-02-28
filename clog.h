@@ -14,6 +14,7 @@ typedef enum {
     CLOG_FATAL   =  5,
 } ClogLevel;
 
+
 #define clog_mute_level(lvl) clog_muted_level = lvl
 #define clog(level, ...) if (level > clog_muted_level) { \
                             printf("%s[%s]: \e[0m", clog_get_level_color(level), clog_get_level_string(level)); \
