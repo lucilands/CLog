@@ -25,6 +25,7 @@ If you add this simple line to the demo, every message lower or equal too the in
  - CLOG_INFO
  - CLOG_TRACE
  - CLOG_DEBUG
+ 
 Will not be logged
 ```C 
 clog_mute_level(CLOG_INFO);
