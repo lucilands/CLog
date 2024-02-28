@@ -25,8 +25,24 @@ If you add this simple line to the demo, every message lower or equal too the in
  - CLOG_INFO
  - CLOG_TRACE
  - CLOG_DEBUG
- 
+
 Will not be logged
 ```C 
 clog_mute_level(CLOG_INFO);
+```
+
+## Changing log output
+
+This example will log "Hello, World" into a file called "log.log"
+
+```C
+#include "clog.h"
+
+int main(void) {
+    FILE *f = open("log.log");
+    
+    clog_set_output(f);
+    clog(CLOG_INFO, "Hello, World");
+    fclose(f);
+}
 ```
