@@ -20,7 +20,7 @@ int main(void) {
 
 The output of this would look something this:
 
-![Demo output](img/demo-output.png)
+![Demo output](img/demo-out.png)
 
 ## Muting log levels
 If you add this simple line to the demo, every message lower or equal too the info level, this includes:
