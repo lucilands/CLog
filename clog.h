@@ -61,7 +61,10 @@ typedef enum {
                             fprintf(clog_output_fd, "%c", c);                                  \
                         }                                                                      \
                     }                                                                          \
-                    fprintf(clog_output_fd, "\e[0m\n")
+                    if (clog_output_fd == stdout || clog_output_fd == stderr) {                \
+                        fprintf(clog_output_fd, "\e[0m\n");                                      \
+                    }                                                                          \
+                    else {fprintf(clog_output_fd, "\n");}
 
 extern ClogLevel clog_muted_level;
 extern FILE *clog_output_fd;
