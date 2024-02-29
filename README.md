@@ -9,12 +9,12 @@ CLog uses a basic macro for logging, and an enum for the different levels of log
 int main(void) {
     CLOG_INIT;
 
-    clog(CLOG_DEBUG,   "Hello from CLog!\n");
-    clog(CLOG_TRACE,   "Hello from CLog!\n");
-    clog(CLOG_INFO,    "Hello from CLog!\n");
-    clog(CLOG_WARNING, "Hello from CLog!\n");
-    clog(CLOG_ERROR,   "Hello from CLog!\n");
-    clog(CLOG_FATAL,   "Hello from CLog!\n");
+    clog(CLOG_DEBUG,   "Hello from CLog!");
+    clog(CLOG_TRACE,   "Hello from CLog!");
+    clog(CLOG_INFO,    "Hello from CLog!");
+    clog(CLOG_WARNING, "Hello from CLog!");
+    clog(CLOG_ERROR,   "Hello from CLog!");
+    clog(CLOG_FATAL,   "Hello from CLog!");
 }
 ```
 
@@ -49,3 +49,15 @@ int main(void) {
     fclose(f);
 }
 ```
+
+## Formatting
+Just as some other logging libraries, this one also supports custom formatting of the output
+
+There are two ways for setting the format. You can eiter set the ```clog_fmt``` variable to the format string you want, or, you can let the ```clog_set_fmt(fmt)``` macro do that for you
+| Format prefix | Description |
+| --- | --- |
+| %c | The ansi color escape character for the color of the current level |
+| %r | The ansi color escape character to reset the color |
+| %m | The message that you provided |
+| %l | The log level string |
+| %% | The character '%' |

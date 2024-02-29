@@ -4,12 +4,12 @@
 
 
 void demo(void) {
-    clog(CLOG_DEBUG,   "Hello from CLog!\n");
-    clog(CLOG_TRACE,   "Hello from CLog!\n");
-    clog(CLOG_INFO,    "Hello from CLog!\n");
-    clog(CLOG_WARNING, "Hello from CLog!\n");
-    clog(CLOG_ERROR,   "Hello from CLog!\n");
-    clog(CLOG_FATAL,   "Hello from CLog!\n");
+    clog(CLOG_DEBUG,   "Hello from CLog!");
+    clog(CLOG_TRACE,   "Hello from CLog!");
+    clog(CLOG_INFO,    "Hello from CLog!");
+    clog(CLOG_WARNING, "Hello from CLog!");
+    clog(CLOG_ERROR,   "Hello from CLog!");
+    clog(CLOG_FATAL,   "Hello from CLog!");
 }
 
 int main(void) {

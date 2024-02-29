@@ -3,8 +3,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
 
 // TODO: Find a way to remove CLOG_INIT
+// TODO: Implement timestamps
+// TODO: Implement logging file info
 
 typedef enum {
     CLOG_NONE    = -1,
@@ -21,21 +25,51 @@ typedef enum {
 
 #define clog_mute_level(lvl) clog_muted_level = lvl
 #define clog_set_output(output_fd) clog_output_fd = output_fd
+#define clog_set_fmt(fmt) clog_fmt = fmt
 
-#define clog(level, ...) if (level > clog_muted_level && clog_output_fd == stdout) { \
-                            printf("%s[%s]: \e[0m", clog_get_level_color(level), clog_get_level_string(level)); \
-                            printf(__VA_ARGS__); \
-                        } \
-                        else if (level > clog_muted_level && clog_output_fd != stdout) { \
-                            fprintf(clog_output_fd, "[%s]: ", clog_get_level_string(level)); \
-                            fprintf(clog_output_fd, __VA_ARGS__); \
-                        }
+#define clog(level, ...) for (size_t i = 0; i < strlen(clog_fmt); i++) {                       \
+                         char c = clog_fmt[i];                                                 \
+                         if (c == '%') {                                                       \
+                            char c = clog_fmt[++i];                                            \
+                            switch (c)                                                         \
+                            {                                                                  \
+                            case 'c':                                                          \
+                                if (clog_output_fd == stdout || clog_output_fd == stderr) {    \
+                                    fprintf(clog_output_fd, "%s", clog_get_level_color(level));\
+                                }                                                              \
+                                break;                                                         \
+                            case 'l':                                                          \
+                                fprintf(clog_output_fd, "%s", clog_get_level_string(level));   \
+                                break;                                                         \
+                            case 'r':                                                          \
+                                if (clog_output_fd == stdout || clog_output_fd == stderr) {    \
+                                    fprintf(clog_output_fd, "\e[0m");                          \
+                                }                                                              \
+                                break;                                                         \
+                            case 'm':                                                          \
+                                fprintf(clog_output_fd, __VA_ARGS__);                          \
+                                break;                                                         \
+                            case '%':                                                          \
+                                fprintf(clog_output_fd, "%");                                  \
+                                break;                                                         \
+                            default:                                                           \
+                                fprintf(clog_output_fd, "%c", c);                              \
+                                break;                                                         \
+                            }                                                                  \
+                        }                                                                      \
+                        else {                                                                 \
+                            fprintf(clog_output_fd, "%c", c);                                  \
+                        }                                                                      \
+                    }                                                                          \
+                    fprintf(clog_output_fd, "\e[0m\n")
 
 extern ClogLevel clog_muted_level;
 extern FILE *clog_output_fd;
+extern char *clog_fmt;
 
 FILE *clog_output_fd = 0;
 ClogLevel clog_muted_level = CLOG_NONE;
+char *clog_fmt = "%c[%l]%r: %m";
 
 const char *clog_get_level_string(ClogLevel level);
 const char *clog_get_level_color(ClogLevel level);
@@ -69,5 +103,6 @@ const char *clog_get_level_color(ClogLevel level) {
         }
     }
 }
+
 
 #endif //_CLOG_H
