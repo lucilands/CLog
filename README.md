@@ -8,6 +8,7 @@ CLog is a simple header-only logging library for C and C++.
  - Printf style formatting for log messages
  - Logging to an arbitrary file descriptor
  - C99 Compatable
+ - Logging file info
 
 ## Todo Features
  - Timestamps for logs
