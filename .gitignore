@@ -3,3 +3,7 @@ bin
 
 #Log files
 *.log
+
+#Local testing files
+test.c
+**.exe

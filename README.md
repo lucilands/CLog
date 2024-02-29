@@ -9,9 +9,11 @@ CLog is a simple header-only logging library for C and C++.
  - Logging to an arbitrary file descriptor
  - C99 Compatable
  - Logging file info
+ - Timestamps
 
 ## Todo Features
- - Timestamps for logs
+ - Milliseconds in timestamps
+ - Documentation for timestamp formatting
  - Removing CLOG_INIT (Hopefully)
 
 # Usage
@@ -30,10 +32,6 @@ int main(void) {
     clog(CLOG_FATAL,   "Hello from CLog!");
 }
 ```
-
-The output of this would look something this:
-
-![Demo output](img/demo-out.png)
 
 ## Muting log levels
 If you add this simple line to the demo, every message lower or equal too the info level, this includes:
@@ -70,7 +68,7 @@ There are two ways for setting the format. You can eiter set the ```clog_fmt``` 
 
 The logger comes with an example format string already implemented:
 ```c
-"%f:%l -> %c[%l]%r: %m"
+"%t: %f:%l -> %c[%l]%r: %m"
 ```
 | Format prefix | Description |
 | --- | --- |
@@ -79,5 +77,6 @@ The logger comes with an example format string already implemented:
 | %m | The message that you provided |
 | %L | The log level string |
 | %f | The file from which the log was called |
-| %l | The line at wich the log was called |
+| %l | The line at which the log was called |
+| %t | Timestamp |
 | %% | The character '%' |
