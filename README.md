@@ -68,7 +68,7 @@ There are two ways for setting the format. You can eiter set the ```clog_fmt``` 
 
 The logger comes with an example format string already implemented:
 ```c
-"%t: %f:%l -> %c[%l]%r: %m"
+"%t: %f:%l -> %c[%L]%r: %m"
 ```
 | Format prefix | Description |
 | --- | --- |
