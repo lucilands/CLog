@@ -1,5 +1,5 @@
-clog: main.c bin
-	gcc main.c -o bin/clog-test -Wall -Wextra
+clog: demo.c bin
+	gcc demo.c -o bin/clog-demo -Wall -Wextra
 
 bin:
 	mkdir $@
