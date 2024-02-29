@@ -53,7 +53,12 @@ int main(void) {
 ## Formatting
 Just as some other logging libraries, this one also supports custom formatting of the output
 
-There are two ways for setting the format. You can eiter set the ```clog_fmt``` variable to the format string you want, or, you can let the ```clog_set_fmt(fmt)``` macro do that for you
+There are two ways for setting the format. You can eiter set the ```clog_fmt``` variable to the format string you want, or, you can let the ```clog_set_fmt(fmt)``` macro do that for you.
+
+The logger comes with an example format string already implemented:
+```c
+"%c[%l]%r: %m"
+```
 | Format prefix | Description |
 | --- | --- |
 | %c | The ansi color escape character for the color of the current level |
