@@ -50,7 +50,7 @@ typedef enum {
                                 fprintf(clog_output_fd, __VA_ARGS__);                          \
                                 break;                                                         \
                             case '%':                                                          \
-                                fprintf(clog_output_fd, "%");                                  \
+                                fprintf(clog_output_fd, "%c", '%');                            \
                                 break;                                                         \
                             default:                                                           \
                                 fprintf(clog_output_fd, "%c", c);                              \
