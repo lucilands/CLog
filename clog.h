@@ -74,9 +74,11 @@ typedef enum {
 extern ClogLevel clog_muted_level;
 extern FILE *clog_output_fd;
 extern char *clog_fmt;
+extern const char *clog_fmt_default;
 
 FILE *clog_output_fd = 0;
 ClogLevel clog_muted_level = CLOG_NONE;
+const char *clog_fmt_default = "%f:%l -> %c[%L]%r: %m";
 char *clog_fmt = "%f:%l -> %c[%L]%r: %m";
 
 const char *clog_get_level_string(ClogLevel level);
