@@ -8,7 +8,6 @@
 
 // TODO: Find a way to remove CLOG_INIT
 // TODO: Implement timestamps
-// TODO: Implement logging file info
 
 typedef enum {
     CLOG_NONE    = -1,
@@ -38,7 +37,7 @@ typedef enum {
                                     fprintf(clog_output_fd, "%s", clog_get_level_color(level));\
                                 }                                                              \
                                 break;                                                         \
-                            case 'l':                                                          \
+                            case 'L':                                                          \
                                 fprintf(clog_output_fd, "%s", clog_get_level_string(level));   \
                                 break;                                                         \
                             case 'r':                                                          \
@@ -52,6 +51,12 @@ typedef enum {
                             case '%':                                                          \
                                 fprintf(clog_output_fd, "%c", '%');                            \
                                 break;                                                         \
+                            case 'f':                                                          \
+                                fprintf(clog_output_fd, "%s", __FILE__);                       \
+                                break;                                                         \
+                            case 'l':                                                          \
+                                fprintf(clog_output_fd, "%i", __LINE__);                       \
+                                break;                                                         \
                             default:                                                           \
                                 fprintf(clog_output_fd, "%c", c);                              \
                                 break;                                                         \
@@ -62,7 +67,7 @@ typedef enum {
                         }                                                                      \
                     }                                                                          \
                     if (clog_output_fd == stdout || clog_output_fd == stderr) {                \
-                        fprintf(clog_output_fd, "\e[0m\n");                                      \
+                        fprintf(clog_output_fd, "\e[0m\n");                                    \
                     }                                                                          \
                     else {fprintf(clog_output_fd, "\n");}
 
@@ -72,7 +77,7 @@ extern char *clog_fmt;
 
 FILE *clog_output_fd = 0;
 ClogLevel clog_muted_level = CLOG_NONE;
-char *clog_fmt = "%c[%l]%r: %m";
+char *clog_fmt = "%f:%l -> %c[%L]%r: %m";
 
 const char *clog_get_level_string(ClogLevel level);
 const char *clog_get_level_color(ClogLevel level);

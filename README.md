@@ -57,12 +57,14 @@ There are two ways for setting the format. You can eiter set the ```clog_fmt``` 
 
 The logger comes with an example format string already implemented:
 ```c
-"%c[%l]%r: %m"
+"%f:%l -> %c[%l]%r: %m"
 ```
 | Format prefix | Description |
 | --- | --- |
 | %c | The ansi color escape character for the color of the current level |
 | %r | The ansi color escape character to reset the color |
 | %m | The message that you provided |
-| %l | The log level string |
+| %L | The log level string |
+| %f | The file from which the log was called |
+| %l | The line at wich the log was called |
 | %% | The character '%' |
