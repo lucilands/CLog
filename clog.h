@@ -29,7 +29,15 @@ THE SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <time.h>
+#ifdef CLOG_USE_SYSTEM_TIME
+    #include <time.h>
+#elif defined(_WIN32)
+    #include <Windows.h>
+#else
+    #warning CLOG_TIME is not implemented for your operating system
+    #define CLOG_NO_TIME
+#endif
+
 
 // TODO: Find a way to remove CLOG_INIT
 // TODO: Implement timestamps for milliseconds and less
@@ -50,7 +58,9 @@ typedef enum {
 #define clog_mute_level(lvl) clog_muted_level = lvl
 #define clog_set_output(output_fd) clog_output_fd = output_fd
 #define clog_set_fmt(fmt) clog_fmt = fmt
+#ifndef CLOG_NO_TIME
 #define clog_set_time_fmt(fmt) clog_time_fmt = fmt
+#endif
 
 #define clog(level, ...) for (size_t i = 0; i < strlen(clog_fmt); i++) {                       \
                          char c = clog_fmt[i];                                                 \
@@ -111,13 +121,22 @@ extern char *clog_time_fmt;
 FILE *clog_output_fd = 0;
 ClogLevel clog_muted_level = CLOG_NONE;
 const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
-char *clog_fmt = "%t: %f:%l -> %c[%L]%r: %m";
-char *clog_time_fmt = "%h:%m:%s";
+#ifndef CLOG_NO_TIME
+    char *clog_fmt = "%t: %f:%l -> %c[%L]%r: %m";
+    char *clog_time_fmt = "%h:%m:%s.%u";
+#else
+    char *clog_fmt = "%f:%l -> %c[%L]%r: %m";
+#endif
 
 const char *clog_get_level_string(ClogLevel level);
 const char *clog_get_level_color(ClogLevel level);
+#ifndef CLOG_NO_TIME
 void clog_get_timestamp(char *tm);
 char *clog_set_digits(const size_t num_digits, char *str);
+#else
+void clog_get_timestamp(char *tm) {(void)tm;};
+char *clog_set_digits(const size_t num_digits, char *str) {(void)num_digits; (void)str; return "";};
+#endif
 
 const char *clog_get_level_string(ClogLevel level) {
     switch (level) {
@@ -149,6 +168,7 @@ const char *clog_get_level_color(ClogLevel level) {
     }
 }
 
+#ifndef CLOG_NO_TIME
 char *clog_set_digits(const size_t num_digits, char *str) {
     if (strlen(str) > num_digits) {
         str[num_digits+1] = '\0';
@@ -167,32 +187,51 @@ char *clog_set_digits(const size_t num_digits, char *str) {
 
 void clog_get_timestamp(char *tm) {
     char buf[50] = {0};
-    time_t rawtime;
-    struct tm * timeinfo;
-    time (&rawtime);
-    timeinfo = localtime(&rawtime);
+    int hour, minute, second, millisecond;
+    #ifdef CLOG_USE_SYSTEM_TIME
+        time_t rawtime;
+        struct tm * timeinfo;
+        time (&rawtime);
+        timeinfo = localtime(&rawtime);
+        hour = timeinfo->tm_hour;
+        minute = timeinfo->tm_min;
+        second = timeinfo->tm_sec;
+        millisecond = 0.0;
+    #elif defined(_WIN32)
+        SYSTEMTIME t;
+        GetSystemTime(&t);
+        hour = t.wHour;
+        minute = t.wMinute;
+        second = t.wSecond;
+        millisecond = t.wMilliseconds;
+    #endif
 
 
     for (size_t i = 0; i < strlen(clog_time_fmt); ++i) {
         char c = clog_time_fmt[i];
         if (c == '%') {
             c = clog_time_fmt[++i];
-            char tmp[2] = {0};
+            char tmp[10] = {0};
             switch (c) {
                 case 'h': 
                     tmp[0] = '\0';
-                    itoa(timeinfo->tm_hour, tmp, 10);
-                    strncat(buf, clog_set_digits(2, tmp), 2);
+                    sprintf(tmp, "%02d", hour);
+                    strncat(buf, tmp, 2);
                     break;
                 case 'm': 
                     tmp[0] = '\0';
-                    itoa(timeinfo->tm_min, tmp, 10);
-                    strncat(buf, clog_set_digits(2, tmp), 2);
+                    sprintf(tmp, "%02d", minute);
+                    strncat(buf, tmp, 2);
                     break;
                 case 's': 
                     tmp[0] = '\0';
-                    itoa(timeinfo->tm_sec, tmp, 10);
-                    strncat(buf, clog_set_digits(2, tmp), 2);
+                    sprintf(tmp, "%02d", second);
+                    strncat(buf, tmp, 2);
+                    break;
+                case 'u':
+                    tmp[0] = '\0';
+                    sprintf(tmp, "%03d", millisecond);
+                    strncat(buf, tmp, 3);
                     break;
 
                 default: break;
@@ -204,5 +243,5 @@ void clog_get_timestamp(char *tm) {
     }
     strncpy(tm, buf, strlen(buf));
 }
-
+#endif //CLOG_NO_TIME
 #endif //_CLOG_H
