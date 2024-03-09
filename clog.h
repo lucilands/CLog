@@ -40,7 +40,6 @@ THE SOFTWARE.
 
 
 // TODO: Find a way to remove CLOG_INIT
-// TODO: Implement timestamps for milliseconds and less
 
 typedef enum {
     CLOG_NONE    = -1,
