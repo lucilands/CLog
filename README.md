@@ -12,9 +12,10 @@ CLog is a simple header-only logging library for C and C++.
  - Timestamps
 
 ## Todo Features
- - Milliseconds in timestamps
- - Documentation for timestamp formatting
  - Removing CLOG_INIT (Hopefully)
+ - Timestamps for other OS's
+    - Linux
+    - MacOS
 
 # Usage
 CLog uses a basic macro for logging, and an enum for the different levels of logging
@@ -80,3 +81,25 @@ The logger comes with an example format string already implemented:
 | %l | The line at which the log was called |
 | %t | Timestamp |
 | %% | The character '%' |
+
+## Timestamps
+
+Timestamps are specified with the format character 't'.
+
+For now timestamps are only implemented for windows. The timestamps for Linux are on the way.
+
+### Timestamp formatting
+
+Timestamps can be formatted with either setting the ```clog_time_fmt``` variable, or calling the ``clog_set_time_fmt`` macro.
+
+The default format string for timing in CLog is:
+```c 
+"%h:%m:%s.%u"
+``` 
+
+| Format prefix | Description |
+| --- | --- |
+| %h | The current hour |
+| %m | The current minute |
+| %s | The current second |
+| %u | The current millisecond |
