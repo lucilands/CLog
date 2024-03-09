@@ -2,7 +2,13 @@
 CLog is a simple header-only logging library for C and C++.
 
 ## Features:
- - Six levels (DEBUG, TRACE, INFO, WARNING, ERROR, FATAL)
+ - Six logging levels 
+    - DEBUG 
+    - TRACE 
+    - INFO
+    - WARNING
+    - ERROR
+    - FATAL
  - Colored logging
  - Custom formatting
  - Printf style formatting for log messages
