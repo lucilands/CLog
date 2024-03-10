@@ -26,7 +26,7 @@ CLog is a simple header-only logging library for C and C++.
 # Usage
 CLog uses a basic macro for logging, and an enum for the different levels of logging
 ```C
-#include "clog.h"
+#include <clog.h>
 
 int main(void) {
     CLOG_INIT;
@@ -54,7 +54,7 @@ Clog does not handle any kind of files, all it needs is a file descriptor.
 
 ```C
 #include <stdio.h>
-#include "clog.h"
+#include <clog.h>
 
 int main(void) {
     FILE *f = open("log.log");
