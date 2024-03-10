@@ -7,3 +7,4 @@ bin
 #Local testing files
 test.c
 **.exe
+/dev
