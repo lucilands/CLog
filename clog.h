@@ -131,10 +131,8 @@ const char *clog_get_level_string(ClogLevel level);
 const char *clog_get_level_color(ClogLevel level);
 #ifndef CLOG_NO_TIME
 void clog_get_timestamp(char *tm);
-char *clog_set_digits(const size_t num_digits, char *str);
 #else
 void clog_get_timestamp(char *tm) {(void)tm;};
-char *clog_set_digits(const size_t num_digits, char *str) {(void)num_digits; (void)str; return "";};
 #endif
 
 const char *clog_get_level_string(ClogLevel level) {
@@ -168,38 +166,13 @@ const char *clog_get_level_color(ClogLevel level) {
 }
 
 #ifndef CLOG_NO_TIME
-char *clog_set_digits(const size_t num_digits, char *str) {
-    if (strlen(str) > num_digits) {
-        str[num_digits+1] = '\0';
-    }
-    else if (strlen(str) < num_digits) {
-        for (size_t i = 0; i < (num_digits - strlen(str)); i++) {
-            char s[100] = {0};
-            s[0] = '0';
-            strcat(s, str);
-            strcpy(str, s);
-        }
-        return str;
-    }
-    return str;
-}
-
 void clog_get_timestamp(char *tm) {
     char buf[50] = {0};
     int hour, minute, second, millisecond;
-    #ifdef CLOG_USE_SYSTEM_TIME
-        time_t rawtime;
-        struct tm * timeinfo;
-        time (&rawtime);
-        timeinfo = localtime(&rawtime);
-        hour = timeinfo->tm_hour;
-        minute = timeinfo->tm_min;
-        second = timeinfo->tm_sec;
-        millisecond = 0.0;
-    #elif defined(_WIN32)
+    #ifdef _WIN32
         SYSTEMTIME t;
         GetSystemTime(&t);
-        hour = t.wHour;
+        hour = t.wHour+1;
         minute = t.wMinute;
         second = t.wSecond;
         millisecond = t.wMilliseconds;
