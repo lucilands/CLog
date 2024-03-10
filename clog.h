@@ -133,6 +133,7 @@ void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
         char c = clog_fmt[i];
         if (c == '%') {
         char c = clog_fmt[++i];
+        char b[50];
         switch (c) {
             case 'c':
                 if (clog_output_fd == stdout || clog_output_fd == stderr) {
@@ -157,7 +158,6 @@ void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
                 len += sprintf(target + len, "%s", file);
                 break;
             case 't':
-                char b[50] = {0};
                 clog_get_timestamp(b);
                 len += sprintf(target + len, "%s", b);
                 break;
