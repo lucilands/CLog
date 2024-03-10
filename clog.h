@@ -30,12 +30,14 @@ THE SOFTWARE.
 #include <string.h>
 #include <stdarg.h>
 #ifdef CLOG_USE_SYSTEM_TIME
-    #include <time.h>
-#elif defined(_WIN32)
-    #include <Windows.h>
+#include <time.h>
+#elif defined(_WIN32) && !defined(CLOG_NO_TIME)
+#include <Windows.h>
 #else
-    #warning CLOG_TIME is not implemented for your operating system
-    #define CLOG_NO_TIME
+#ifndef CLOG_NO_TIME
+#warning CLOG_TIME is not implemented for your operating system
+#define CLOG_NO_TIME
+#endif
 #endif
 
 

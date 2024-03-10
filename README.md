@@ -55,6 +55,8 @@ clog_mute_level(CLOG_INFO);
 
 This example will log "Hello, World" into a file called "log.log"
 
+Clog does not handle any kind of files, all it needs is a file descriptor.
+
 ```C
 #include <stdio.h>
 #include "clog.h"
