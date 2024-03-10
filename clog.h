@@ -61,55 +61,7 @@ typedef enum {
 #define clog_set_time_fmt(fmt) clog_time_fmt = fmt
 #endif
 
-#define clog(level, ...) for (size_t i = 0; i < strlen(clog_fmt); i++) {                       \
-                         char c = clog_fmt[i];                                                 \
-                         if (c == '%') {                                                       \
-                            char c = clog_fmt[++i];                                            \
-                            switch (c)                                                         \
-                            {                                                                  \
-                            case 'c':                                                          \
-                                if (clog_output_fd == stdout || clog_output_fd == stderr) {    \
-                                    fprintf(clog_output_fd, "%s", clog_get_level_color(level));\
-                                }                                                              \
-                                break;                                                         \
-                            case 'L':                                                          \
-                                fprintf(clog_output_fd, "%s", clog_get_level_string(level));   \
-                                break;                                                         \
-                            case 'r':                                                          \
-                                if (clog_output_fd == stdout || clog_output_fd == stderr) {    \
-                                    fprintf(clog_output_fd, "\e[0m");                          \
-                                }                                                              \
-                                break;                                                         \
-                            case 'm':                                                          \
-                                fprintf(clog_output_fd, __VA_ARGS__);                          \
-                                break;                                                         \
-                            case '%':                                                          \
-                                fprintf(clog_output_fd, "%c", '%');                            \
-                                break;                                                         \
-                            case 'f':                                                          \
-                                fprintf(clog_output_fd, "%s", __FILE__);                       \
-                                break;                                                         \
-                            case 't':                                                          \
-                                char b[50] = {0};                                              \
-                                clog_get_timestamp(b);                                         \
-                                fprintf(clog_output_fd, "%s", b);                              \
-                                break;                                                         \
-                            case 'l':                                                          \
-                                fprintf(clog_output_fd, "%i", __LINE__);                       \
-                                break;                                                         \
-                            default:                                                           \
-                                fprintf(clog_output_fd, "%c", c);                              \
-                                break;                                                         \
-                            }                                                                  \
-                        }                                                                      \
-                        else {                                                                 \
-                            fprintf(clog_output_fd, "%c", c);                                  \
-                        }                                                                      \
-                    }                                                                          \
-                    if (clog_output_fd == stdout || clog_output_fd == stderr) {                \
-                        fprintf(clog_output_fd, "\e[0m\n");                                    \
-                    }                                                                          \
-                    else {fprintf(clog_output_fd, "\n");}
+#define clog(level, ...) __clog(level, __FILE__, __LINE__, __VA_ARGS__)
 
 extern ClogLevel clog_muted_level;
 extern FILE *clog_output_fd;
@@ -127,6 +79,7 @@ const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
     char *clog_fmt = "%f:%l -> %c[%L]%r: %m";
 #endif
 
+void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...);
 const char *clog_get_level_string(ClogLevel level);
 const char *clog_get_level_color(ClogLevel level);
 #ifndef CLOG_NO_TIME
@@ -163,6 +116,61 @@ const char *clog_get_level_color(ClogLevel level) {
             return "";
         }
     }
+}
+
+void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+
+    for (size_t i = 0; i < strlen(clog_fmt); i++) {                      
+                         char c = clog_fmt[i];                                                
+                         if (c == '%') {                                                      
+                            char c = clog_fmt[++i];                                           
+                            switch (c)                                                        
+                            {                                                                 
+                            case 'c':                                                         
+                                if (clog_output_fd == stdout || clog_output_fd == stderr) {   
+                                    fprintf(clog_output_fd, "%s", clog_get_level_color(level));
+                                }                                                             
+                                break;                                                        
+                            case 'L':                                                         
+                                fprintf(clog_output_fd, "%s", clog_get_level_string(level));  
+                                break;                                                        
+                            case 'r':                                                         
+                                if (clog_output_fd == stdout || clog_output_fd == stderr) {   
+                                    fprintf(clog_output_fd, "\e[0m");                         
+                                }                                                             
+                                break;                                                        
+                            case 'm':                                                         
+                                vfprintf(clog_output_fd, fmt, args);
+                                break;                                                        
+                            case '%':                                                         
+                                fprintf(clog_output_fd, "%c", '%');                           
+                                break;                                                        
+                            case 'f':                                                         
+                                fprintf(clog_output_fd, "%s", file);                      
+                                break;                                                        
+                            case 't':                                                         
+                                char b[50] = {0};                                             
+                                clog_get_timestamp(b);                                        
+                                fprintf(clog_output_fd, "%s", b);                             
+                                break;                                                        
+                            case 'l':                                                         
+                                fprintf(clog_output_fd, "%d", line);                      
+                                break;                                                        
+                            default:                                                          
+                                fprintf(clog_output_fd, "%c", c);                             
+                                break;                                                        
+                            }                                                                 
+                        }                                                                     
+                        else {                                                                
+                            fprintf(clog_output_fd, "%c", c);                                 
+                        }                                                                     
+                    }                                                                         
+                    if (clog_output_fd == stdout || clog_output_fd == stderr) {               
+                        fprintf(clog_output_fd, "\e[0m\n");                                   
+                    }                                                                         
+                    else {fprintf(clog_output_fd, "\n");}
 }
 
 #ifndef CLOG_NO_TIME
