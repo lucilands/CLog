@@ -41,12 +41,7 @@ int main(void) {
 ```
 
 ## Muting log levels
-If you add this simple line to the demo, every message lower or equal too the info level, this includes:
- - CLOG_INFO
- - CLOG_TRACE
- - CLOG_DEBUG
-
-Will not be logged
+If you add this simple line to the demo, any message with the level CLOG_DEBUG or CLOG_TRACE will not show
 ```C 
 clog_mute_level(CLOG_INFO);
 ```

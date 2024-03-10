@@ -63,7 +63,7 @@ typedef enum {
 #define clog_set_time_fmt(fmt) clog_time_fmt = fmt
 #endif
 
-#define clog(level, ...) __clog(level, __FILE__, __LINE__, __VA_ARGS__)
+#define clog(level, ...) if (level >= clog_muted_level) __clog(level, __FILE__, __LINE__, __VA_ARGS__)
 
 extern ClogLevel clog_muted_level;
 extern FILE *clog_output_fd;
