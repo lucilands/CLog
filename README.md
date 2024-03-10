@@ -71,6 +71,8 @@ Just as some other logging libraries, this one also supports custom formatting o
 There are two ways for setting the format. You can eiter set the ```clog_fmt``` variable to the format string you want, or, you can let the ```clog_set_fmt(fmt)``` macro do that for you.
 
 The logger comes with an example format string already implemented:
+
+If you dont want too use timestamps in your project, even when the library supports it, you can define the ```CLOG_NO_TIME``` macros. This will disable all timestamp functionality from the library
 ```c
 "%t: %f:%l -> %c[%L]%r: %m"
 ```
