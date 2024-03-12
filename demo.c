@@ -1,4 +1,6 @@
 #include <stdio.h>
+
+#define CLOG_IMPLEMENTATION
 #include "clog.h"
 
 

@@ -73,15 +73,6 @@ extern char *clog_fmt;
 extern const char *clog_fmt_default;
 extern char *clog_time_fmt;
 
-FILE *clog_output_fd = 0;
-ClogLevel clog_muted_level = CLOG_NONE;
-const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
-#ifndef CLOG_NO_TIME
-    char *clog_fmt = "%t: %f:%l -> %c[%L]%r: %m";
-    char *clog_time_fmt = "%h:%m:%s.%u";
-#else
-    char *clog_fmt = "%f:%l -> %c[%L]%r: %m";
-#endif
 
 void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...);
 const char * __cdecl clog_get_level_string(ClogLevel level);
@@ -90,6 +81,18 @@ const char * __cdecl clog_get_level_color(ClogLevel level);
 void __cdecl clog_get_timestamp(char *tm);
 #else
 void __cdecl clog_get_timestamp(char *tm) {(void)tm;};
+#endif
+
+
+#ifdef CLOG_IMPLEMENTATION
+FILE *clog_output_fd = 0;
+ClogLevel clog_muted_level = CLOG_NONE;
+const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
+#ifndef CLOG_NO_TIME
+    char *clog_fmt = "%t: %f:%l -> %c[%L]%r: %m";
+    char *clog_time_fmt = "%h:%m:%s.%u";
+#else
+    char *clog_fmt = "%f:%l -> %c[%L]%r: %m";
 #endif
 
 const char * __cdecl clog_get_level_string(ClogLevel level) {
@@ -226,4 +229,5 @@ void __cdecl clog_get_timestamp(char *tm) {
     strncpy(tm, buf, strlen(buf));
 }
 #endif //CLOG_NO_TIME
+#endif //CLOG_IMPLEMENTATION
 #endif //_CLOG_H

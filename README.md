@@ -1,5 +1,5 @@
 # CLog
-CLog is a simple header-only logging library for C and C++.
+CLog is a simple STB-style header-only logging library for C and C++.
 
 ## Features:
  - Six logging levels 
@@ -24,8 +24,12 @@ CLog is a simple header-only logging library for C and C++.
     - MacOS
 
 # Usage
+CLog work similarly to the stb libraries.
+Wherever you define ``CLOG_IMPLEMENTATION`` the functions will be defined.
+
 CLog uses a basic macro for logging, and an enum for the different levels of logging
 ```C
+#define CLOG_IMPLEMENTATION
 #include <clog.h>
 
 int main(void) {
@@ -54,6 +58,8 @@ Clog does not handle any kind of files, all it needs is a file descriptor.
 
 ```C
 #include <stdio.h>
+
+#define CLOG_IMPLEMENTATION
 #include <clog.h>
 
 int main(void) {
