@@ -84,15 +84,15 @@ const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
 #endif
 
 void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...);
-const char *clog_get_level_string(ClogLevel level);
-const char *clog_get_level_color(ClogLevel level);
+const char * __cdecl clog_get_level_string(ClogLevel level);
+const char * __cdecl clog_get_level_color(ClogLevel level);
 #ifndef CLOG_NO_TIME
-void clog_get_timestamp(char *tm);
+void __cdecl clog_get_timestamp(char *tm);
 #else
-void clog_get_timestamp(char *tm) {(void)tm;};
+void __cdecl clog_get_timestamp(char *tm) {(void)tm;};
 #endif
 
-const char *clog_get_level_string(ClogLevel level) {
+const char * __cdecl clog_get_level_string(ClogLevel level) {
     switch (level) {
         case CLOG_DEBUG:   return "DEBUG";
         case CLOG_TRACE:   return "TRACE";
@@ -107,7 +107,7 @@ const char *clog_get_level_string(ClogLevel level) {
     }
 }
 
-const char *clog_get_level_color(ClogLevel level) {
+const char * __cdecl clog_get_level_color(ClogLevel level) {
     switch (level) {
         case CLOG_DEBUG:   return "\e[32m";
         case CLOG_TRACE:   return "\e[90m";
@@ -122,7 +122,7 @@ const char *clog_get_level_color(ClogLevel level) {
     }
 }
 
-void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
+void __cdecl __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
 
@@ -176,7 +176,7 @@ void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
 }
 
 #ifndef CLOG_NO_TIME
-void clog_get_timestamp(char *tm) {
+void __cdecl clog_get_timestamp(char *tm) {
     char buf[50] = {0};
     int hour, minute, second, millisecond;
     #ifdef _WIN32
