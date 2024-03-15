@@ -58,11 +58,11 @@ typedef enum {
 
 #define CLOG_INIT clog_output_fd = stdout
 
-#define clog_mute_level(lvl) clog_muted_level = lvl
-#define clog_set_output(output_fd) clog_output_fd = output_fd
-#define clog_set_fmt(fmt) clog_fmt = fmt
+#define clog_mute_level(lvl) clog_muted_level = (char*)lvl
+#define clog_set_output(output_fd) clog_output_fd =(char*) output_fd
+#define clog_set_fmt(fmt) clog_fmt = (char*)fmt
 #ifndef CLOG_NO_TIME
-#define clog_set_time_fmt(fmt) clog_time_fmt = fmt
+#define clog_set_time_fmt(fmt) clog_time_fmt = (char*)fmt
 #endif
 
 #define clog(level, ...) if (level >= clog_muted_level) __clog(level, __FILE__, __LINE__, __VA_ARGS__)
