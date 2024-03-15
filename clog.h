@@ -89,10 +89,10 @@ FILE *clog_output_fd = 0;
 ClogLevel clog_muted_level = CLOG_NONE;
 const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
 #ifndef CLOG_NO_TIME
-    char *clog_fmt = "%t: %f:%l -> %c[%L]%r: %m";
-    char *clog_time_fmt = "%h:%m:%s.%u";
+    char *clog_fmt = (char*)"%t: %f:%l -> %c[%L]%r: %m";
+    char *clog_time_fmt = (char*)"%h:%m:%s.%u";
 #else
-    char *clog_fmt = "%f:%l -> %c[%L]%r: %m";
+    char *clog_fmt = (char*)"%f:%l -> %c[%L]%r: %m";
 #endif
 
 const char * __cdecl clog_get_level_string(ClogLevel level) {
