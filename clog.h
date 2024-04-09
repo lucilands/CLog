@@ -129,6 +129,7 @@ void __cdecl __clog(ClogLevel level, const char *file, int line, const char *fmt
     va_list args;
     va_start(args, fmt);
 
+    const char *clog_level = clog_get_level_color(level);
     char target[CLOG_BUF_LIMIT];
     size_t len = 0;
 
@@ -140,11 +141,11 @@ void __cdecl __clog(ClogLevel level, const char *file, int line, const char *fmt
         switch (c) {
             case 'c':
                 if (clog_output_fd == stdout || clog_output_fd == stderr) {
-                    len += sprintf(target + len, "%s", clog_get_level_color(level));
+                    len += sprintf(target + len, "%s", clog_level);
                 }
                 break;
             case 'L':
-                len += sprintf(target + len, "%s", clog_get_level_string(level));
+                len += sprintf(target + len, "%s", clog_level);
                 break;
             case 'r':
                 if (clog_output_fd == stdout || clog_output_fd == stderr) {
