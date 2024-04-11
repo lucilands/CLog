@@ -71,6 +71,14 @@ int main(void) {
 }
 ```
 
+## Preprocessor macros
+If you want to disable specific parts of clog, you can define some preprocessor macros to disable those parts
+| Macro | Description |
+| --- | --- |
+| CLOG_NO_TIME | Disables timestamps for clog |
+| CLOG_NO_CDECL | Disables the usage of the "cdecl" attribute |
+| CLOG_USE_SYSTEM_TIME | Tell clog to use your machines system time for time stamps |
+
 ## Formatting
 Just as some other logging libraries, this one also supports custom formatting of the output
 

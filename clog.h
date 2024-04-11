@@ -37,8 +37,8 @@ THE SOFTWARE.
 #ifndef CLOG_NO_TIME
 #warning CLOG_TIME is not implemented for your operating system
 #define CLOG_NO_TIME
-#endif
-#endif
+#endif // CLOG_NO_TIME
+#endif // CLOG_USE_SYSTEM_TIME
 
 #define CLOG_BUF_LIMIT 2048
 
@@ -59,11 +59,21 @@ typedef enum {
 #define CLOG_INIT clog_output_fd = stdout
 
 #define clog_mute_level(lvl) clog_muted_level = (char*)lvl
-#define clog_set_output(output_fd) clog_output_fd =(char*) output_fd
+#define clog_set_output(output_fd) clog_output_fd = output_fd
 #define clog_set_fmt(fmt) clog_fmt = (char*)fmt
 #ifndef CLOG_NO_TIME
 #define clog_set_time_fmt(fmt) clog_time_fmt = (char*)fmt
-#endif
+#endif // CLOG_NO_TIME
+
+#ifndef CLOG_NO_CDECL
+#ifdef _WIN32
+#define _cdecl __cdecl
+#elif defined(__unix__)
+#define _cdecl __attribute__((cdecl))
+#endif _WIN32
+#else
+#define _cdecl
+#endif // CLOG_NO_CDECL
 
 #define clog(level, ...) if (level >= clog_muted_level) __clog(level, __FILE__, __LINE__, __VA_ARGS__)
 
@@ -74,13 +84,13 @@ extern const char *clog_fmt_default;
 extern char *clog_time_fmt;
 
 
-void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...);
-const char * __cdecl clog_get_level_string(ClogLevel level);
-const char * __cdecl clog_get_level_color(ClogLevel level);
+void _cdecl __clog(ClogLevel level, const char *file, int line, const char *fmt, ...);
+const char * _cdecl clog_get_level_string(ClogLevel level);
+const char * _cdecl clog_get_level_color(ClogLevel level);
 #ifndef CLOG_NO_TIME
-void __cdecl clog_get_timestamp(char *tm);
+void _cdecl clog_get_timestamp(char *tm);
 #else
-void __cdecl clog_get_timestamp(char *tm) {(void)tm;};
+void _cdecl clog_get_timestamp(char *tm) {(void)tm;};
 #endif
 
 
@@ -95,7 +105,7 @@ const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
     char *clog_fmt = (char*)"%f:%l -> %c[%L]%r: %m";
 #endif
 
-const char * __cdecl clog_get_level_string(ClogLevel level) {
+const char * _cdecl clog_get_level_string(ClogLevel level) {
     switch (level) {
         case CLOG_DEBUG:   return "DEBUG";
         case CLOG_TRACE:   return "TRACE";
@@ -110,7 +120,7 @@ const char * __cdecl clog_get_level_string(ClogLevel level) {
     }
 }
 
-const char * __cdecl clog_get_level_color(ClogLevel level) {
+const char * _cdecl clog_get_level_color(ClogLevel level) {
     switch (level) {
         case CLOG_DEBUG:   return "\e[32m";
         case CLOG_TRACE:   return "\e[90m";
@@ -125,11 +135,12 @@ const char * __cdecl clog_get_level_color(ClogLevel level) {
     }
 }
 
-void __cdecl __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
+void _cdecl __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
 
-    const char *clog_level = clog_get_level_color(level);
+    const char *clog_level_color = clog_get_level_color(level);
+    const char *clog_level = clog_get_level_string(level);
     char target[CLOG_BUF_LIMIT];
     size_t len = 0;
 
@@ -141,7 +152,7 @@ void __cdecl __clog(ClogLevel level, const char *file, int line, const char *fmt
         switch (c) {
             case 'c':
                 if (clog_output_fd == stdout || clog_output_fd == stderr) {
-                    len += sprintf(target + len, "%s", clog_level);
+                    len += sprintf(target + len, "%s", clog_level_color);
                 }
                 break;
             case 'L':
@@ -180,7 +191,7 @@ void __cdecl __clog(ClogLevel level, const char *file, int line, const char *fmt
 }
 
 #ifndef CLOG_NO_TIME
-void __cdecl clog_get_timestamp(char *tm) {
+void _cdecl clog_get_timestamp(char *tm) {
     char buf[50] = {0};
     int hour, minute, second, millisecond;
     #ifdef _WIN32
@@ -205,26 +216,6 @@ void __cdecl clog_get_timestamp(char *tm) {
                     strncat(buf, tmp, 2);
                     break;
                 case 'm': 
-                    tmp[0] = '\0';
-                    sprintf(tmp, "%02d", minute);
-                    strncat(buf, tmp, 2);
-                    break;
-                case 's': 
-                    tmp[0] = '\0';
-                    sprintf(tmp, "%02d", second);
-                    strncat(buf, tmp, 2);
-                    break;
-                case 'u':
-                    tmp[0] = '\0';
-                    sprintf(tmp, "%03d", millisecond);
-                    strncat(buf, tmp, 3);
-                    break;
-
-                default: break;
-            }
-        }
-        else {
-            strncat(buf, &c, 1);
         }
     }
     strncpy(tm, buf, strlen(buf));
