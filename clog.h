@@ -29,16 +29,18 @@ THE SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#ifdef CLOG_USE_SYSTEM_TIME
-#include <time.h>
-#elif defined(_WIN32) && !defined(CLOG_NO_TIME)
+#ifndef CLOG_NO_TIME
+#ifdef _WIN32
 #include <Windows.h>
+#elif defined(__unix__)
+#include <time.h>
+#endif // _WIN32
 #else
 #ifndef CLOG_NO_TIME
 #warning CLOG_TIME is not implemented for your operating system
 #define CLOG_NO_TIME
 #endif // CLOG_NO_TIME
-#endif // CLOG_USE_SYSTEM_TIME
+#endif // CLOG_NO_TIME
 
 #define CLOG_BUF_LIMIT 2048
 
@@ -70,7 +72,7 @@ typedef enum {
 #define _cdecl __cdecl
 #elif defined(__unix__)
 #define _cdecl __attribute__((cdecl))
-#endif _WIN32
+#endif //_WIN32
 #else
 #define _cdecl
 #endif // CLOG_NO_CDECL
@@ -201,6 +203,13 @@ void _cdecl clog_get_timestamp(char *tm) {
         minute = t.wMinute;
         second = t.wSecond;
         millisecond = t.wMilliseconds;
+    #elif defined(__unix__)
+        time_t t = time(NULL);
+        struct tm time = *localtime(&t);
+        hour = time.tm_hour;
+        minute = time.tm_min;
+        second = time.tm_sec;
+        millisecond = 0;
     #endif
 
 
@@ -216,6 +225,26 @@ void _cdecl clog_get_timestamp(char *tm) {
                     strncat(buf, tmp, 2);
                     break;
                 case 'm': 
+                    tmp[0] = '\0';
+                    sprintf(tmp, "%02d", minute);
+                    strncat(buf, tmp, 2);
+                    break;
+                case 's': 
+                    tmp[0] = '\0';
+                    sprintf(tmp, "%02d", second);
+                    strncat(buf, tmp, 2);
+                    break;
+                case 'u':
+                    tmp[0] = '\0';
+                    sprintf(tmp, "%03d", millisecond);
+                    strncat(buf, tmp, 3);
+                    break;
+
+                default: break;
+            }
+        }
+        else {
+            strncat(buf, &c, 1);
         }
     }
     strncpy(tm, buf, strlen(buf));
