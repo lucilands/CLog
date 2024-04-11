@@ -57,9 +57,6 @@ typedef enum {
     CLOG_FATAL   =  5,
 } ClogLevel;
 
-
-#define CLOG_INIT clog_output_fd = stdout
-
 #define clog_mute_level(lvl) clog_muted_level = (char*)lvl
 #define clog_set_output(output_fd) clog_output_fd = output_fd
 #define clog_set_fmt(fmt) clog_fmt = (char*)fmt
@@ -140,6 +137,7 @@ const char * _cdecl clog_get_level_color(ClogLevel level) {
 void _cdecl __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
+    if (!clog_output_fd) clog_output_fd = stdout;
 
     const char *clog_level_color = clog_get_level_color(level);
     const char *clog_level = clog_get_level_string(level);

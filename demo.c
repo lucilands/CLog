@@ -15,7 +15,6 @@ void demo(void) {
 }
 
 int main(void) {
-    CLOG_INIT;
     demo();
     
     FILE *f = fopen("log.log", "w");
