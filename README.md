@@ -18,7 +18,6 @@ CLog is a simple STB-style header-only logging library for C and C++.
  - Timestamps
 
 ## Todo Features
- - Removing CLOG_INIT (Hopefully)
  - Timestamps for other OS's
     - Linux
     - MacOS
