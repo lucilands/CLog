@@ -131,6 +131,8 @@ const ClogLevel MY_CLOG_LEVEL = CLOG_REGISTER_LEVEL("MyClogLevel", "\e[32", 0)
 ```
 
 Now, the parameters might look intimidating, but they are actually pretty simple! The parameters are:
- - const char *name (The name that appears in the log)
- - const char *color_escape_char (The color the log gets colored. Use ansi escape characters here, or leave it blank for no color at all)
- - int severity (The severity of the message, basically decides when its muted and when its not)
+ - `const char *name` (The name that appears in the log)
+ - `const char *color_escape_char` (The color the log gets colored. Use ansi escape characters here, or leave it blank for no color at all)
+ - `int severity` (The severity of the message, basically decides when its muted and when its not)
+
+After this, you can just use it the same as you use any other CLog levels
