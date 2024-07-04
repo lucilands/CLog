@@ -9,6 +9,7 @@ CLog is a simple STB-style header-only logging library for C and C++.
     - WARNING
     - ERROR
     - FATAL
+ - Custom log levels
  - Colored logging
  - Custom formatting
  - Printf style formatting for log messages
@@ -19,7 +20,7 @@ CLog is a simple STB-style header-only logging library for C and C++.
 
 ## Todo Features
  - Timestamps for other OS's
-    - Linux
+    - Linux(Almost done)
     - MacOS
 
 # Usage
@@ -118,3 +119,18 @@ The default format string for timing in CLog is:
 | %m | The current minute |
 | %s | The current second |
 | %u | The current millisecond |
+
+## Custom log levels
+CLog now allows you to add custom Logging levels to your programs, and the best part? It's relatively easy too!
+
+All you have to do is to use the macro `CLOG_REGISTER_LEVEL` like this:
+```C
+#include <clog.h>
+
+const ClogLevel MY_CLOG_LEVEL = CLOG_REGISTER_LEVEL("MyClogLevel", "\e[32", 0)
+```
+
+Now, the parameters might look intimidating, but they are actually pretty simple! The parameters are:
+ - const char *name (The name that appears in the log)
+ - const char *color_escape_char (The color the log gets colored. Use ansi escape characters here, or leave it blank for no color at all)
+ - int severity (The severity of the message, basically decides when its muted and when its not)
