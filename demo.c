@@ -4,12 +4,13 @@
 #include "clog.h"
 
 
-
+const ClogLevel SANDFANG_INFO = CLOG_REGISTER_LEVEL("Sandfang", "\e[32m", 2);
 
 void demo(void) {
     clog(CLOG_DEBUG,   "Hello from CLog!");
     clog(CLOG_TRACE,   "Hello from CLog!");
     clog(CLOG_INFO,    "Hello from CLog!");
+    clog(SANDFANG_INFO, "Hello Sandfang");
     clog(CLOG_WARNING, "Hello from CLog!");
     clog(CLOG_ERROR,   "Hello from CLog!");
     clog(CLOG_FATAL,   "Hello from CLog!");

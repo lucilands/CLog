@@ -47,7 +47,7 @@ extern "C" {
 #endif //__cplusplus
 
 #define CLOG_BUF_LIMIT 2048
-#define CLOG_REGISTER_LEVEL(name, color_escape_char, severity) {name, color_escape_char, severity}
+#define CLOG_REGISTER_LEVEL(name_, color, severity_) {.name = name_, .color_escape_char = color, .severity = severity_}
 
 
 typedef struct ClogLevel {
@@ -233,10 +233,12 @@ void _cdecl clog_get_timestamp(char *tm) {
     strncpy(tm, buf, strlen(buf));
 }
 
-#if defined(__cplusplus)
-}
-#endif
 
 #endif //CLOG_NO_TIME
 #endif //CLOG_IMPLEMENTATION
+
+#if defined(__cplusplus)
+}
+#endif //__cplusplus
+
 #endif //_CLOG_H
