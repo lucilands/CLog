@@ -64,16 +64,6 @@ typedef struct ClogLevel {
 #define clog_set_time_fmt(fmt) clog_time_fmt = (char*)fmt
 #endif // CLOG_NO_TIME
 
-#ifndef CLOG_NO_CDECL
-#ifdef _WIN32
-#define _cdecl __cdecl
-#elif defined(__unix__)
-#define _cdecl __attribute__((cdecl))
-#endif //_WIN32
-#else
-#define _cdecl
-#endif // CLOG_NO_CDECL
-
 #define clog(level, ...) if (level.severity >= clog_muted_level.severity) __clog(level, __FILE__, __LINE__, __VA_ARGS__)
 
 extern ClogLevel clog_muted_level;
@@ -121,7 +111,7 @@ const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
 #endif
 
 
-void _cdecl __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
+void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     if (!clog_output_fd) clog_output_fd = stdout;
@@ -176,7 +166,7 @@ void _cdecl __clog(ClogLevel level, const char *file, int line, const char *fmt,
 }
 
 #ifndef CLOG_NO_TIME
-void _cdecl clog_get_timestamp(char *tm) {
+void clog_get_timestamp(char *tm) {
     char buf[50] = {0};
     int hour, minute, second, millisecond;
     #ifdef _WIN32
