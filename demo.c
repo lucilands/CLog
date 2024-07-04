@@ -5,6 +5,7 @@
 
 
 
+
 void demo(void) {
     clog(CLOG_DEBUG,   "Hello from CLog!");
     clog(CLOG_TRACE,   "Hello from CLog!");
@@ -16,7 +17,7 @@ void demo(void) {
 
 int main(void) {
     demo();
-    
+
     FILE *f = fopen("log.log", "w");
 
     clog_set_output(f);
