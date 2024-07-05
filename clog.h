@@ -163,6 +163,7 @@ void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
     if (!clog_output_fd) clog_output_fd = stdout;
 
     char *target = malloc(CLOG_BUF_LIMIT);
+    memset(target, '\0', CLOG_BUF_LIMIT);
 
     size_t len = 0;
 
@@ -171,6 +172,7 @@ void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
         if (c == '%') {
         char c = clog_fmt[++i];
         char b[50];
+        memset(b, '\0', 50);
         switch (c) {
             case 'c':
                 if (clog_output_fd == stdout || clog_output_fd == stderr) {
