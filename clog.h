@@ -126,12 +126,12 @@ const ClogLevel CLOG_FATAL   = CLOG_REGISTER_LEVEL("FATAL",   CLOG_COLOR_BOLD CL
 
 FILE *clog_output_fd = 0;
 ClogLevel clog_muted_level = CLOG_NONE;
-const char *clog_fmt_default = CLOG_COLOR_ITALIC "%t: %f:%l%r -> %c[%L]%r: %m";
+const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
 #ifndef CLOG_NO_TIME
-    char *clog_fmt = (char*)CLOG_COLOR_ITALIC "%t: %f:%l%r -> %c[%L]%r: %m";
+    char *clog_fmt = (char*)"%t: %f:%l -> %c[%L]%r: %m";
     char *clog_time_fmt = (char*)"%h:%m:%s.%u";
 #else
-    char *clog_fmt = (char*)CLOG_COLOR_ITALIC "%f:%l%r -> %c[%L]%r: %m";
+    char *clog_fmt = (char*)"%f:%l -> %c[%L]%r: %m";
 #endif
 
 size_t __clog_buffer_size(const char *fmt, va_list args) {
