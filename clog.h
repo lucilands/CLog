@@ -42,6 +42,30 @@ THE SOFTWARE.
 #endif // CLOG_NO_TIME
 #endif // CLOG_NO_TIME
 
+#define CLOG_COLOR_BLACK      "\e[30m"
+#define CLOG_COLOR_RED        "\e[31m"
+#define CLOG_COLOR_GREEN      "\e[32m"
+#define CLOG_COLOR_YELLOW     "\e[33m"
+#define CLOG_COLOR_BLUE       "\e[34m"
+#define CLOG_COLOR_MAGENTA    "\e[35m"
+#define CLOG_COLOR_CYAN       "\e[36m"
+#define CLOG_COLOR_WHITE      "\e[37m"
+#define CLOG_COLOR_DEFUALT    "\e[39m"
+
+#define CLOG_COLOR_BLACK_BG   "\e[40m"
+#define CLOG_COLOR_RED_BG     "\e[41m"
+#define CLOG_COLOR_GREEN_BG   "\e[42m"
+#define CLOG_COLOR_YELLOW_BG  "\e[43m"
+#define CLOG_COLOR_BLUE_BG    "\e[44m"
+#define CLOG_COLOR_MAGENTA_BG "\e[45m"
+#define CLOG_COLOR_CYAN_BG    "\e[46m"
+#define CLOG_COLOR_WHITE_BG   "\e[47m"
+#define CLOG_COLOR_DEFAULT_BG "\e[49m"
+
+#define CLOG_COLOR_BOLD       "\e[1m"
+#define CLOG_COLOR_FAINT      "\e[2m"
+#define CLOG_COLOR_ITALIC     "\e[3m"
+
 #if defined(__cplusplus)
 extern "C" {
 #endif //__cplusplus
@@ -91,23 +115,23 @@ void clog_get_timestamp(char *tm) {(void)tm;};
 
 
 #ifdef CLOG_IMPLEMENTATION
-const ClogLevel CLOG_NONE    = CLOG_REGISTER_LEVEL("",        "",           -1);
-const ClogLevel CLOG_DEBUG   = CLOG_REGISTER_LEVEL("DEBUG",   "\e[32m",      0);
-const ClogLevel CLOG_TRACE   = CLOG_REGISTER_LEVEL("TRACE",   "\e[90m",      1);
-const ClogLevel CLOG_INFO    = CLOG_REGISTER_LEVEL("INFO",    "\e[97m",      2);
-const ClogLevel CLOG_WARNING = CLOG_REGISTER_LEVEL("WARNING", "\e[33m",      3);
-const ClogLevel CLOG_ERROR   = CLOG_REGISTER_LEVEL("ERROR",   "\e[31m",      4);
-const ClogLevel CLOG_FATAL   = CLOG_REGISTER_LEVEL("FATAL",   "\e[1m\e[91m", 5);
+const ClogLevel CLOG_NONE    = CLOG_REGISTER_LEVEL("",        "",                               -1);
+const ClogLevel CLOG_DEBUG   = CLOG_REGISTER_LEVEL("DEBUG",   CLOG_COLOR_GREEN,                  0);
+const ClogLevel CLOG_TRACE   = CLOG_REGISTER_LEVEL("TRACE",   CLOG_COLOR_WHITE CLOG_COLOR_FAINT, 1);
+const ClogLevel CLOG_INFO    = CLOG_REGISTER_LEVEL("INFO",    CLOG_COLOR_WHITE,                  2);
+const ClogLevel CLOG_WARNING = CLOG_REGISTER_LEVEL("WARNING", CLOG_COLOR_YELLOW,                 3);
+const ClogLevel CLOG_ERROR   = CLOG_REGISTER_LEVEL("ERROR",   CLOG_COLOR_RED,                    4);
+const ClogLevel CLOG_FATAL   = CLOG_REGISTER_LEVEL("FATAL",   CLOG_COLOR_BOLD CLOG_COLOR_RED,    5);
 
 
 FILE *clog_output_fd = 0;
 ClogLevel clog_muted_level = CLOG_NONE;
-const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
+const char *clog_fmt_default = CLOG_COLOR_ITALIC "%t: %f:%l%r -> %c[%L]%r: %m";
 #ifndef CLOG_NO_TIME
-    char *clog_fmt = (char*)"%t: %f:%l -> %c[%L]%r: %m";
+    char *clog_fmt = (char*)CLOG_COLOR_ITALIC "%t: %f:%l%r -> %c[%L]%r: %m";
     char *clog_time_fmt = (char*)"%h:%m:%s.%u";
 #else
-    char *clog_fmt = (char*)"%f:%l -> %c[%L]%r: %m";
+    char *clog_fmt = (char*)CLOG_COLOR_ITALIC "%f:%l%r -> %c[%L]%r: %m";
 #endif
 
 size_t __clog_buffer_size(const char *fmt, va_list args) {
