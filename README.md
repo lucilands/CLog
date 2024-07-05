@@ -127,12 +127,37 @@ All you have to do is to use the macro `CLOG_REGISTER_LEVEL` like this:
 ```C
 #include <clog.h>
 
-const ClogLevel MY_CLOG_LEVEL = CLOG_REGISTER_LEVEL("MyClogLevel", "\e[32", 0)
+const ClogLevel MY_CLOG_LEVEL = CLOG_REGISTER_LEVEL("MyClogLevel", CLOG_COLOR_BOLD CLOG_COLOR_GREEN, 0)
 ```
 
 Now, the parameters might look intimidating, but they are actually pretty simple! The parameters are:
  - `const char *name` (The name that appears in the log)
  - `const char *color_escape_char` (The color the log gets colored. Use ansi escape characters here, or leave it blank for no color at all)
  - `int severity` (The severity of the message, basically decides when its muted and when its not)
+
+There are a couple colors that clog comes with, these are as follows
+| Color name | Description |
+| ---------- | ----------- |
+| CLOG_COLOR_BLACK      | Black color ANSI escape code                    |
+| CLOG_COLOR_RED        | Red color ANSI escape code                      |
+| CLOG_COLOR_GREEN      | Green color ANSI escape code                    |
+| CLOG_COLOR_YELLOW     | Yellow color ANSI escape code                   |
+| CLOG_COLOR_BLUE       | Blue color ANSI escape code                     |
+| CLOG_COLOR_MAGENTA    | Magenta color ANSI escape code                  |
+| CLOG_COLOR_CYAN       | Cyan color ANSI escape code                     |
+| CLOG_COLOR_WHITE      | White color ANSI escape code                    |
+| CLOG_COLOR_DEFAULT    | Default foreground color escape code            |
+| CLOG_COLOR_BLACK_BG   | Black background color ANSI escape code         |
+| CLOG_COLOR_RED_BG     | Red background color ANSI escape code           |
+| CLOG_COLOR_GREEN_BG   | Green background color ANSI escape code         |
+| CLOG_COLOR_YELLOW_BG  | Yellow background color ANSI escape code        |
+| CLOG_COLOR_BLUE_BG    | Blue background color ANSI escape code          |
+| CLOG_COLOR_MAGENTA_BG | Magenta background color ANSI escape code       |
+| CLOG_COLOR_CYAN_BG    | Cyan background color ANSI escape code          |
+| CLOG_COLOR_WHITE_BG   | White background color ANSI escape code         |
+| CLOG_COLOR_DEFAULT_BG | Default background color escape code            |
+| CLOG_COLOR_BOLD       | Bold ANSI escape code                           |
+| CLOG_COLOR_FAINT      | Faint ANSI escape code                          |
+| CLOG_COLOR_ITALIC     | Italic ANSI escape code                         |
 
 After this, you can just use it the same as you use any other CLog levels
