@@ -47,7 +47,7 @@ extern "C" {
 #endif //__cplusplus
 
 #define CLOG_BUF_LIMIT 2048
-#define CLOG_REGISTER_LEVEL(name_, color, severity_) {.name = name_, .color_escape_char = color, .severity = severity_}
+#define CLOG_REGISTER_LEVEL(name_, color, severity_) (const ClogLevel) {.name = name_, .color_escape_char = color, .severity = severity_}
 
 
 typedef struct ClogLevel {
