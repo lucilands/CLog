@@ -139,8 +139,6 @@ size_t __clog_sprintf(char *target, size_t cur_len, size_t max_len, const char *
     }
 }
 
-
-
 size_t __clog_vsprintf(char *target, size_t cur_len, size_t max_len, const char *fmt, size_t len, va_list args) {
     if (cur_len + len >= max_len) {
         clog(CLOG_WARNING, "CLog message too large");
@@ -264,7 +262,7 @@ void clog_get_timestamp(char *tm) {
             }
         }
         else {
-            buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%c", c);
+            buf_idx += __clog_snprintf(buf + buf_idx, buf_idx, 50, &c);
         }
     }
     strncpy(tm, buf, strlen(buf));
