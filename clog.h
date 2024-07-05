@@ -66,20 +66,20 @@ typedef struct ClogLevel {
 
 #define clog(level, ...) if (level.severity >= clog_muted_level.severity) __clog(level, __FILE__, __LINE__, __VA_ARGS__)
 
-extern ClogLevel clog_muted_level;
-extern const ClogLevel CLOG_NONE;
-extern const ClogLevel CLOG_DEBUG;
-extern const ClogLevel CLOG_TRACE;
-extern const ClogLevel CLOG_INFO;
-extern const ClogLevel CLOG_WARNING;
-extern const ClogLevel CLOG_ERROR;
-extern const ClogLevel CLOG_FATAL;
+ClogLevel clog_muted_level;
+const ClogLevel CLOG_NONE;
+const ClogLevel CLOG_DEBUG;
+const ClogLevel CLOG_TRACE;
+const ClogLevel CLOG_INFO;
+const ClogLevel CLOG_WARNING;
+const ClogLevel CLOG_ERROR;
+const ClogLevel CLOG_FATAL;
 
 
-extern FILE *clog_output_fd;
-extern char *clog_fmt;
-extern const char *clog_fmt_default;
-extern char *clog_time_fmt;
+FILE *clog_output_fd;
+char *clog_fmt;
+const char *clog_fmt_default;
+char *clog_time_fmt;
 
 
 void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...);
