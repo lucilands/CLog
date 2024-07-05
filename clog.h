@@ -46,7 +46,7 @@ THE SOFTWARE.
 extern "C" {
 #endif //__cplusplus
 
-#define CLOG_BUF_LIMIT 2048
+#define CLOG_BUF_LIMIT 1024
 #define CLOG_REGISTER_LEVEL(name_, color, severity_) (const ClogLevel) {.name = name_, .color_escape_char = color, .severity = severity_}
 
 
@@ -110,13 +110,58 @@ const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
     char *clog_fmt = (char*)"%f:%l -> %c[%L]%r: %m";
 #endif
 
+size_t __clog_buffer_size(const char *fmt, va_list args) {
+    int res = vsnprintf(NULL, 0, fmt, args);
+    return res + 1;
+}
+
+size_t __clog_sprintf(char *target, size_t cur_len, size_t max_len, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+
+    size_t len = __clog_buffer_size(fmt, args);
+    va_end(args);
+    va_start(args, fmt);
+
+    if (cur_len + len >= max_len) {
+        clog(CLOG_WARNING, "CLog message too large!!");
+        size_t ret = vsnprintf(target, max_len - cur_len - 5, fmt, args);
+        strncat(target, "...", 4);
+        ret += 4;
+        va_end(args);
+
+        return ret;
+    }
+    else {
+        size_t ret = vsprintf(target, fmt, args);
+        va_end(args);
+        return ret;
+    }
+}
+
+size_t __clog_vsprintf(char *target, size_t cur_len, size_t max_len, const char *fmt, size_t len, va_list args) {
+    if (cur_len + len >= max_len) {
+        clog(CLOG_WARNING, "CLog message too large");
+        size_t ret = vsnprintf(target, max_len - cur_len - 5, fmt, args);
+        strncat(target, "...", 4);
+        ret += 4;
+
+        return ret;
+    }
+    else {
+        size_t ret = vsprintf(target, fmt, args);
+        return ret;
+    }
+}
+
 
 void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     if (!clog_output_fd) clog_output_fd = stdout;
 
-    char target[CLOG_BUF_LIMIT];
+    char *target = malloc(CLOG_BUF_LIMIT);
+
     size_t len = 0;
 
     for (size_t i = 0; i < strlen(clog_fmt); i++) {
@@ -127,48 +172,57 @@ void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
         switch (c) {
             case 'c':
                 if (clog_output_fd == stdout || clog_output_fd == stderr) {
-                    len += sprintf(target + len, "%s", level.color_escape_char);
+                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", level.color_escape_char);
                 }
                 break;
             case 'L':
-                len += sprintf(target + len, "%s", level.name);
+                len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", level.name);
                 break;
             case 'r':
                 if (clog_output_fd == stdout || clog_output_fd == stderr) {
-                    len += sprintf(target + len, "\e[0m");
+                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "\e[0m");
                 }
                 break;
             case 'm':
-                len += vsprintf(target + len, fmt, args);
+                size_t msg_len = __clog_buffer_size(fmt, args);
+                va_start(args, fmt);
+                len += __clog_vsprintf(target + len, len, CLOG_BUF_LIMIT, fmt, msg_len, args);
                 break;
             case '%':
-                len += sprintf(target + len, "%c", '%');
+                len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", '%');
                 break;
             case 'f':
-                len += sprintf(target + len, "%s", file);
+                len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", file);
                 break;
             case 't':
                 clog_get_timestamp(b);
-                len += sprintf(target + len, "%s", b);
+                len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", b);
                 break;
             case 'l':
-                len += sprintf(target + len, "%d", line);
+                len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%d", line);
                 break;
             default:
-                len += sprintf(target + len, "%c", c);
+                len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", c);
                 break;
             }
         }
-        else len += sprintf(target + len, "%c", c);
+        else len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", c);
+
+
     }
     if (clog_output_fd == stdout || clog_output_fd == stderr) fprintf(clog_output_fd, "%s\e[0m\n", target);
     else fprintf(clog_output_fd, "%s\n", target);
+    free(target);
 }
 
 #ifndef CLOG_NO_TIME
 void clog_get_timestamp(char *tm) {
-    char buf[50] = {0};
-    int hour, minute, second, millisecond;
+    char buf[50];
+    memset(buf, 0, 50);
+
+    int buf_idx = 0;
+
+    int hour, minute, second, millisecond = 0;
     #ifdef _WIN32
         SYSTEMTIME t;
         GetSystemTime(&t);
@@ -178,10 +232,10 @@ void clog_get_timestamp(char *tm) {
         millisecond = t.wMilliseconds;
     #elif defined(__unix__)
         time_t t = time(NULL);
-        struct tm time = *localtime(&t);
-        hour = time.tm_hour;
-        minute = time.tm_min;
-        second = time.tm_sec;
+        struct tm *time = localtime(&t);
+        hour = time->tm_hour;
+        minute = time->tm_min;
+        second = time->tm_sec;
         millisecond = 0;
     #endif
 
@@ -190,27 +244,18 @@ void clog_get_timestamp(char *tm) {
         char c = clog_time_fmt[i];
         if (c == '%') {
             c = clog_time_fmt[++i];
-            char tmp[10] = {0};
             switch (c) {
                 case 'h':
-                    tmp[0] = '\0';
-                    sprintf(tmp, "%02d", hour);
-                    strncat(buf, tmp, 2);
+                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%02i:", hour);
                     break;
                 case 'm':
-                    tmp[0] = '\0';
-                    sprintf(tmp, "%02d", minute);
-                    strncat(buf, tmp, 2);
+                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%02i:", minute);
                     break;
                 case 's':
-                    tmp[0] = '\0';
-                    sprintf(tmp, "%02d", second);
-                    strncat(buf, tmp, 2);
+                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%02i.", second);
                     break;
                 case 'u':
-                    tmp[0] = '\0';
-                    sprintf(tmp, "%03d", millisecond);
-                    strncat(buf, tmp, 3);
+                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%03i", millisecond);
                     break;
 
                 default: break;
@@ -231,4 +276,4 @@ void clog_get_timestamp(char *tm) {
 }
 #endif //__cplusplus
 
-#endif //_CLOG_H
+#endif //_CLOG_
