@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include <Windows.h>
 #elif defined(__unix__)
 #include <time.h>
+#include <sys/time.h>
 #endif // _WIN32
 #else
 #ifndef CLOG_NO_TIME
@@ -251,7 +252,8 @@ void clog_get_timestamp(char *tm) {
 
     int buf_idx = 0;
 
-    int hour, minute, second, millisecond = 0;
+    int hour, minute, second = 0;
+    unsigned long int millisecond = 0;
     #ifdef _WIN32
         SYSTEMTIME t;
         GetSystemTime(&t);
@@ -262,10 +264,14 @@ void clog_get_timestamp(char *tm) {
     #elif defined(__unix__)
         time_t t = time(NULL);
         struct tm *time = localtime(&t);
+
+        struct timeval time_val;
+        gettimeofday(&time_val, NULL);
+
         hour = time->tm_hour;
         minute = time->tm_min;
         second = time->tm_sec;
-        millisecond = 0;
+        millisecond = (time_val.tv_sec * 1000000 + time_val.tv_usec) % 1000;
     #endif
 
 
@@ -275,16 +281,16 @@ void clog_get_timestamp(char *tm) {
             c = clog_time_fmt[++i];
             switch (c) {
                 case 'h':
-                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%02i", hour);
+                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%02.2i", hour);
                     break;
                 case 'm':
-                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%02i", minute);
+                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%02.2i", minute);
                     break;
                 case 's':
-                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%02i", second);
+                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%02.2i", second);
                     break;
                 case 'u':
-                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%03i", millisecond);
+                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%03.3lu", millisecond);
                     break;
 
                 default: break;
