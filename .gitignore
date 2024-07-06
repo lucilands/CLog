@@ -8,3 +8,4 @@ bin
 test.c
 **.exe
 /dev
+/tests
