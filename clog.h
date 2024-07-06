@@ -123,6 +123,7 @@ const ClogLevel CLOG_WARNING = CLOG_REGISTER_LEVEL("WARNING", CLOG_COLOR_YELLOW,
 const ClogLevel CLOG_ERROR   = CLOG_REGISTER_LEVEL("ERROR",   CLOG_COLOR_RED,                    4);
 const ClogLevel CLOG_FATAL   = CLOG_REGISTER_LEVEL("FATAL",   CLOG_COLOR_BOLD CLOG_COLOR_RED,    5);
 
+const ClogLevel __CLOG_INTERNAL_ERROR = CLOG_REGISTER_LEVEL("CLOG INTERNAL ERROR", CLOG_COLOR_BOLD CLOG_COLOR_YELLOW, 3);
 
 FILE *clog_output_fd = 0;
 ClogLevel clog_muted_level = CLOG_NONE;
@@ -148,7 +149,7 @@ size_t __clog_sprintf(char *target, size_t cur_len, size_t max_len, const char *
     va_start(args, fmt);
 
     if (cur_len + len >= max_len) {
-        clog(CLOG_WARNING, "CLog message too large!!");
+        clog(__CLOG_INTERNAL_ERROR, "CLog message too large!!");
         size_t ret = vsnprintf(target, max_len - cur_len - 5, fmt, args);
         strncat(target, "...", 4);
         ret += 4;
@@ -167,7 +168,7 @@ size_t __clog_sprintf(char *target, size_t cur_len, size_t max_len, const char *
 
 size_t __clog_vsprintf(char *target, size_t cur_len, size_t max_len, const char *fmt, size_t len, va_list args) {
     if (cur_len + len >= max_len) {
-        clog(CLOG_WARNING, "CLog message too large");
+        clog(__CLOG_INTERNAL_ERROR, "CLog message too large");
         size_t ret = vsnprintf(target, max_len - cur_len - 5, fmt, args);
         strncat(target, "...", 4);
         ret += 4;
