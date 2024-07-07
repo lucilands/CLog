@@ -128,12 +128,13 @@ const ClogLevel __CLOG_INTERNAL_ERROR = CLOG_REGISTER_LEVEL("CLOG INTERNAL ERROR
 
 FILE *clog_output_fd = 0;
 ClogLevel clog_muted_level = CLOG_NONE;
-const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
 #ifndef CLOG_NO_TIME
-    char *clog_fmt = (char*)"%t: %f:%l -> %c[%L]%r: %m";
+    const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m\n";
+    char *clog_fmt = (char*)"%t: %f:%l -> %c[%L]%r: %m\n";
     char *clog_time_fmt = (char*)"%h:%m:%s.%u";
 #else
-    char *clog_fmt = (char*)"%f:%l -> %c[%L]%r: %m";
+    const char *clog_fmt_default = (char*)"%f:%l -> %c[%L]%r: %m\n";
+    char *clog_fmt = (char*)"%f:%l -> %c[%L]%r: %m\n";
 #endif
 
 size_t __clog_buffer_size(const char *fmt, va_list args) {
@@ -240,8 +241,8 @@ void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
 
 
     }
-    if (clog_output_fd == stdout || clog_output_fd == stderr) fprintf(clog_output_fd, "%s\e[0m\n", target);
-    else fprintf(clog_output_fd, "%s\n", target);
+    if (clog_output_fd == stdout || clog_output_fd == stderr) fprintf(clog_output_fd, "%s\e[0m", target);
+    else fprintf(clog_output_fd, "%s", target);
     free(target);
 }
 
