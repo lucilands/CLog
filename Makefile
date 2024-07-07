@@ -7,3 +7,10 @@ clog: demo.c bin
 
 bin:
 	mkdir $@
+
+clean:
+ifeq ($(OS),Windows_NT)
+	rmdir ./bin
+else
+	rm -r ./bin
+endif
