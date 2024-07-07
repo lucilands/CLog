@@ -78,7 +78,7 @@ extern "C" {
 typedef struct ClogLevel {
     const char *name;
     const char *color_escape_char;
-    const int severity;
+    int severity;
 } ClogLevel;
 
 
@@ -89,9 +89,8 @@ typedef struct ClogLevel {
 #define clog_set_time_fmt(fmt) clog_time_fmt = (char*)fmt
 #endif // CLOG_NO_TIME
 
-#define clog(level, ...) if (level.severity >= clog_muted_level.severity) __clog(level, __FILE__, __LINE__, __VA_ARGS__)
+#define clog(level, ...) __clog(level, __FILE__, __LINE__, __VA_ARGS__)
 
-ClogLevel clog_muted_level;
 const ClogLevel CLOG_NONE;
 const ClogLevel CLOG_DEBUG;
 const ClogLevel CLOG_TRACE;
@@ -105,13 +104,14 @@ FILE *clog_output_fd;
 char *clog_fmt;
 const char *clog_fmt_default;
 char *clog_time_fmt;
+ClogLevel clog_muted_level;
 
 
 void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...);
 #ifndef CLOG_NO_TIME
-void clog_get_timestamp(char *tm);
+void clog_get_timestamp(char *output);
 #else
-void clog_get_timestamp(char *tm) {(void)tm;};
+void clog_get_timestamp(char *output) {(void)output;};
 #endif
 
 
@@ -125,9 +125,9 @@ const ClogLevel CLOG_ERROR   = CLOG_REGISTER_LEVEL("ERROR",   CLOG_COLOR_RED,   
 const ClogLevel CLOG_FATAL   = CLOG_REGISTER_LEVEL("FATAL",   CLOG_COLOR_BOLD CLOG_COLOR_RED,    5);
 
 const ClogLevel __CLOG_INTERNAL_ERROR = CLOG_REGISTER_LEVEL("CLOG INTERNAL ERROR", CLOG_COLOR_BOLD CLOG_COLOR_YELLOW, 3);
+ClogLevel clog_muted_level = CLOG_NONE;
 
 FILE *clog_output_fd = 0;
-ClogLevel clog_muted_level = CLOG_NONE;
 #ifndef CLOG_NO_TIME
     const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m\n";
     char *clog_fmt = (char*)"%t: %f:%l -> %c[%L]%r: %m\n";
@@ -185,65 +185,67 @@ size_t __clog_vsprintf(char *target, size_t cur_len, size_t max_len, const char 
 
 
 void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    if (!clog_output_fd) clog_output_fd = stdout;
+    if (level.severity > clog_muted_level.severity) {
+        va_list args;
+        va_start(args, fmt);
+        if (!clog_output_fd) clog_output_fd = stdout;
 
-    char *target = malloc(CLOG_BUF_LIMIT);
-    memset(target, '\0', CLOG_BUF_LIMIT);
+        char *target = malloc(CLOG_BUF_LIMIT);
+        memset(target, '\0', CLOG_BUF_LIMIT);
 
-    size_t len = 0;
+        size_t len = 0;
 
-    for (size_t i = 0; i < strlen(clog_fmt); i++) {
-        char c = clog_fmt[i];
-        if (c == '%') {
-        char c = clog_fmt[++i];
-        char b[50];
-        memset(b, '\0', 50);
-        switch (c) {
-            case 'c':
-                if (clog_output_fd == stdout || clog_output_fd == stderr) {
-                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", level.color_escape_char);
+        for (size_t i = 0; i < strlen(clog_fmt); i++) {
+            char c = clog_fmt[i];
+            if (c == '%') {
+            char c = clog_fmt[++i];
+            char b[50];
+            memset(b, '\0', 50);
+            switch (c) {
+                case 'c':
+                    if (clog_output_fd == stdout || clog_output_fd == stderr) {
+                        len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", level.color_escape_char);
+                    }
+                    break;
+                case 'L':
+                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", level.name);
+                    break;
+                case 'r':
+                    if (clog_output_fd == stdout || clog_output_fd == stderr) {
+                        len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "\e[0m");
+                    }
+                    break;
+                case 'm':
+                    size_t msg_len = __clog_buffer_size(fmt, args);
+                    va_start(args, fmt);
+                    len += __clog_vsprintf(target + len, len, CLOG_BUF_LIMIT, fmt, msg_len, args);
+                    break;
+                case '%':
+                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", '%');
+                    break;
+                case 'f':
+                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", file);
+                    break;
+                case 't':
+                    clog_get_timestamp(b);
+                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", b);
+                    break;
+                case 'l':
+                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%d", line);
+                    break;
+                default:
+                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", c);
+                    break;
                 }
-                break;
-            case 'L':
-                len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", level.name);
-                break;
-            case 'r':
-                if (clog_output_fd == stdout || clog_output_fd == stderr) {
-                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "\e[0m");
-                }
-                break;
-            case 'm':
-                size_t msg_len = __clog_buffer_size(fmt, args);
-                va_start(args, fmt);
-                len += __clog_vsprintf(target + len, len, CLOG_BUF_LIMIT, fmt, msg_len, args);
-                break;
-            case '%':
-                len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", '%');
-                break;
-            case 'f':
-                len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", file);
-                break;
-            case 't':
-                clog_get_timestamp(b);
-                len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", b);
-                break;
-            case 'l':
-                len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%d", line);
-                break;
-            default:
-                len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", c);
-                break;
             }
+            else len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", c);
+
+
         }
-        else len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", c);
-
-
+        if (clog_output_fd == stdout || clog_output_fd == stderr) fprintf(clog_output_fd, "%s\e[0m", target);
+        else fprintf(clog_output_fd, "%s", target);
+        free(target);
     }
-    if (clog_output_fd == stdout || clog_output_fd == stderr) fprintf(clog_output_fd, "%s\e[0m", target);
-    else fprintf(clog_output_fd, "%s", target);
-    free(target);
 }
 
 #ifndef CLOG_NO_TIME
