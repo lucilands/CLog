@@ -271,7 +271,7 @@ void clog_get_timestamp(char *output) {
         hour = time->tm_hour;
         minute = time->tm_min;
         second = time->tm_sec;
-        millisecond = (time_val.tv_sec * 1000000 + time_val.tv_usec) % 1000;
+        millisecond = (time_val.tv_sec * 1000 + time_val.tv_usec / 1000) % 1000;
     #endif
 
 
