@@ -246,7 +246,7 @@ void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
 }
 
 #ifndef CLOG_NO_TIME
-void clog_get_timestamp(char *tm) {
+void clog_get_timestamp(char *output) {
     char buf[50];
     memset(buf, 0, 50);
 
@@ -300,7 +300,7 @@ void clog_get_timestamp(char *tm) {
             buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%c", c);
         }
     }
-    strncpy(tm, buf, strlen(buf));
+    strncpy(output, buf, strlen(buf));
 }
 
 
