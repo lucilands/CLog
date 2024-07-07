@@ -51,7 +51,7 @@ THE SOFTWARE.
 #define CLOG_COLOR_MAGENTA    "\e[35m"
 #define CLOG_COLOR_CYAN       "\e[36m"
 #define CLOG_COLOR_WHITE      "\e[37m"
-#define CLOG_COLOR_DEFUALT    "\e[39m"
+#define CLOG_COLOR_DEFAULT    "\e[39m"
 
 #define CLOG_COLOR_BLACK_BG   "\e[40m"
 #define CLOG_COLOR_RED_BG     "\e[41m"
@@ -188,6 +188,11 @@ void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
     if (level.severity > clog_muted_level.severity) {
         va_list args;
         va_start(args, fmt);
+
+        if (__clog_buffer_size(fmt, args) >= CLOG_BUF_LIMIT) {
+            fprintf(clog_output_fd, CLOG_COLOR_YELLOW CLOG_COLOR_BOLD"[ERROR using fprintf]:" CLOG_COLOR_DEFAULT "CLog message too long");
+            return;
+        }
         if (!clog_output_fd) clog_output_fd = stdout;
 
         char *target = malloc(CLOG_BUF_LIMIT);
