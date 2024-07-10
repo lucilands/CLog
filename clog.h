@@ -93,7 +93,7 @@ typedef struct ClogLevel {
 
 #define clog(level, ...) __clog(level, __FILE__, __LINE__, __VA_ARGS__)
 
-#ifdef CLOG_NO_VARIABLES
+#ifndef CLOG_NO_VARIABLES
 const ClogLevel CLOG_NONE;
 const ClogLevel CLOG_DEBUG;
 const ClogLevel CLOG_TRACE;
