@@ -93,22 +93,20 @@ typedef struct ClogLevel {
 
 #define clog(level, ...) __clog(level, __FILE__, __LINE__, __VA_ARGS__)
 
-#ifndef CLOG_NO_VARIABLES
-const ClogLevel CLOG_NONE;
-const ClogLevel CLOG_DEBUG;
-const ClogLevel CLOG_TRACE;
-const ClogLevel CLOG_INFO;
-const ClogLevel CLOG_WARNING;
-const ClogLevel CLOG_ERROR;
-const ClogLevel CLOG_FATAL;
+extern const ClogLevel CLOG_NONE;
+extern const ClogLevel CLOG_DEBUG;
+extern const ClogLevel CLOG_TRACE;
+extern const ClogLevel CLOG_INFO;
+extern const ClogLevel CLOG_WARNING;
+extern const ClogLevel CLOG_ERROR;
+extern const ClogLevel CLOG_FATAL;
 
 
-FILE *clog_output_fd;
-char *clog_fmt;
-const char *clog_fmt_default;
-char *clog_time_fmt;
-ClogLevel clog_muted_level;
-#endif
+extern FILE *clog_output_fd;
+extern char *clog_fmt;
+extern const char *clog_fmt_default;
+extern char *clog_time_fmt;
+extern ClogLevel clog_muted_level;
 
 void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...);
 #ifndef CLOG_NO_TIME
