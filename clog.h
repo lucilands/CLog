@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include <stdarg.h>
 #ifndef CLOG_NO_TIME
 #ifdef _WIN32
-#include <Windows.h>
+#include <windows.h>
 #elif defined(__unix__)
 #include <time.h>
 #include <sys/time.h>
