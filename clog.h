@@ -80,11 +80,11 @@ extern "C" {
 typedef struct ClogLevel {
     const char *name;
     const char *color_escape_char;
-    int severity;
+    const int severity;
 } ClogLevel;
 
 
-#define clog_mute_level(lvl) clog_muted_level = lvl
+#define clog_mute_level(lvl) clog_muted_level = lvl.severity
 #define clog_set_output(output_fd) clog_output_fd = output_fd
 #define clog_set_fmt(fmt) clog_fmt = (char*)fmt
 #ifndef CLOG_NO_TIME
@@ -106,7 +106,7 @@ extern FILE *clog_output_fd;
 extern char *clog_fmt;
 extern const char *clog_fmt_default;
 extern char *clog_time_fmt;
-extern ClogLevel clog_muted_level;
+extern int clog_muted_level;
 
 void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...);
 #ifndef CLOG_NO_TIME
@@ -117,7 +117,6 @@ void clog_get_timestamp(char *output) {(void)output;};
 
 
 #ifdef CLOG_IMPLEMENTATION
-const ClogLevel CLOG_NONE    = CLOG_REGISTER_LEVEL("",        "",                               -1);
 const ClogLevel CLOG_DEBUG   = CLOG_REGISTER_LEVEL("DEBUG",   CLOG_COLOR_GREEN,                  0);
 const ClogLevel CLOG_TRACE   = CLOG_REGISTER_LEVEL("TRACE",   CLOG_COLOR_WHITE CLOG_COLOR_FAINT, 1);
 const ClogLevel CLOG_INFO    = CLOG_REGISTER_LEVEL("INFO",    CLOG_COLOR_WHITE,                  2);
@@ -126,7 +125,7 @@ const ClogLevel CLOG_ERROR   = CLOG_REGISTER_LEVEL("ERROR",   CLOG_COLOR_RED,   
 const ClogLevel CLOG_FATAL   = CLOG_REGISTER_LEVEL("FATAL",   CLOG_COLOR_BOLD CLOG_COLOR_RED,    5);
 
 const ClogLevel __CLOG_INTERNAL_ERROR = CLOG_REGISTER_LEVEL("CLOG INTERNAL ERROR", CLOG_COLOR_BOLD CLOG_COLOR_YELLOW, 3);
-ClogLevel clog_muted_level = CLOG_NONE;
+int clog_muted_level = -1;
 
 int __clog_errno = 0;
 
@@ -192,7 +191,7 @@ size_t __clog_vsprintf(char *target, size_t cur_len, size_t max_len, const char 
 
 
 void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
-    if (level.severity > clog_muted_level.severity) {
+    if (level.severity > clog_muted_level) {
         __clog_errno = 0;
         va_list args;
         va_start(args, fmt);
