@@ -118,6 +118,11 @@ The default format string for timing in CLog is:
 | %s | The current second |
 | %u | The current millisecond |
 
+## Max buffer lenght
+Clog uses a buffer to construct the log message, the size of this buffer is defined in the macro `CLOG_BUF_LIMIT`.
+
+It defaults to 1024, but if you want to increase or decrease it, define it with your buffer size before you include.
+
 ## Custom log levels
 CLog now allows you to add custom Logging levels to your programs, and the best part? It's relatively easy too!
 
