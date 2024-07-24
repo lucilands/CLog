@@ -74,12 +74,12 @@ extern "C" {
 #ifndef CLOG_BUF_LIMIT
 #define CLOG_BUF_LIMIT 1024
 #endif
-#define CLOG_REGISTER_LEVEL(name_, color, severity_) (const ClogLevel) {.name = name_, .color_escape_char = color, .severity = severity_}
+#define CLOG_REGISTER_LEVEL(name_, color_, severity_) (const ClogLevel) {.name = name_, .color = color_, .severity = severity_}
 
 
 typedef struct ClogLevel {
     const char *name;
-    const char *color_escape_char;
+    const char *color;
     const int severity;
 } ClogLevel;
 
@@ -215,7 +215,7 @@ void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
             switch (c) {
                 case 'c':
                     if (clog_output_fd == stdout || clog_output_fd == stderr) {
-                        len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", level.color_escape_char);
+                        len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", level.color);
                     }
                     break;
                 case 'L':
