@@ -83,7 +83,7 @@ The logger comes with an example format string already implemented:
 
 If you dont want too use timestamps in your project, even when the library supports it, you can define the ```CLOG_NO_TIME``` macro. This will disable all timestamp functionality from the library
 ```c
-"%t: %f:%l -> %c[%L]%r: %m"
+"%t: %f:%l (%F) -> %c[%L]%r: %m"
 ```
 | Format prefix | Description |
 | --- | --- |
@@ -94,6 +94,7 @@ If you dont want too use timestamps in your project, even when the library suppo
 | %f | The file from which the log was called |
 | %l | The line at which the log was called |
 | %t | Timestamp |
+| %F | Current function name |
 | %% | The character '%' |
 
 ## Timestamps

@@ -67,6 +67,14 @@ THE SOFTWARE.
 #define CLOG_COLOR_FAINT      "\e[2m"
 #define CLOG_COLOR_ITALIC     "\e[3m"
 
+#ifndef __FUNCTION_NAME__
+    #ifdef WIN32   //WINDOWS
+        #define __FUNCTION_NAME__   __FUNCTION__  
+    #else          //*NIX
+        #define __FUNCTION_NAME__   __func__ 
+    #endif
+#endif
+
 #if defined(__cplusplus)
 extern "C" {
 #endif //__cplusplus
@@ -91,7 +99,7 @@ typedef struct ClogLevel {
 #define clog_set_time_fmt(fmt) clog_time_fmt = (char*)fmt
 #endif // CLOG_NO_TIME
 
-#define clog(level, ...) __clog(level, __FILE__, __LINE__, __VA_ARGS__)
+#define clog(level, ...) __clog(level, __FILE__, __LINE__, __FUNCTION_NAME__, __VA_ARGS__)
 
 extern const ClogLevel CLOG_NONE;
 extern const ClogLevel CLOG_DEBUG;
@@ -108,7 +116,7 @@ extern const char *clog_fmt_default;
 extern char *clog_time_fmt;
 extern int clog_muted_level;
 
-void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...);
+void __clog(ClogLevel level, const char *file, int line, const char *func, const char *fmt, ...);
 #ifndef CLOG_NO_TIME
 void clog_get_timestamp(char *output);
 #else
@@ -130,12 +138,12 @@ int __clog_errno = 0;
 
 FILE *clog_output_fd = 0;
 #ifndef CLOG_NO_TIME
-    const char *clog_fmt_default = "%t: %f:%l -> %c[%L]%r: %m";
-    char *clog_fmt = (char*)"%t: %f:%l -> %c[%L]%r: %m";
+    const char *clog_fmt_default = "%t: %f:%l (%F) -> %c[%L]%r: %m";
+    char *clog_fmt = (char*)"%t: %f:%l (%F) -> %c[%L]%r: %m";
     char *clog_time_fmt = (char*)"%h:%m:%s.%u";
 #else
-    const char *clog_fmt_default = (char*)"%f:%l -> %c[%L]%r: %m";
-    char *clog_fmt = (char*)"%f:%l -> %c[%L]%r: %m";
+    const char *clog_fmt_default = (char*)"%f:%l (%F) -> %c[%L]%r: %m";
+    char *clog_fmt = (char*)"%f:%l (%F) -> %c[%L]%r: %m";
 #endif
 
 size_t __clog_buffer_size(const char *fmt, va_list args) {
@@ -189,7 +197,7 @@ size_t __clog_vsprintf(char *target, size_t cur_len, size_t max_len, const char 
 }
 
 
-void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
+void __clog(ClogLevel level, const char *file, int line, const char *func, const char *fmt, ...) {
     if (level.severity > clog_muted_level) {
         __clog_errno = 0;
         va_list args;
@@ -242,6 +250,9 @@ void __clog(ClogLevel level, const char *file, int line, const char *fmt, ...) {
                     break;
                 case 'l':
                     len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%d", line);
+                    break;
+                case 'F':
+                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s()", func);
                     break;
                 default:
                     len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", c);
