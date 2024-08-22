@@ -127,6 +127,7 @@ void clog_get_timestamp(char *output);
 void clog_get_timestamp(char *output) {(void)output;};
 #endif
 
+#define clog_assert(expr) if (!(expr)) {clog(CLOG_FATAL, "Assertion failed!! "#expr" exiting..."); exit(1);}
 
 #ifdef CLOG_IMPLEMENTATION
 const ClogLevel CLOG_DEBUG   = CLOG_REGISTER_LEVEL("DEBUG",   CLOG_COLOR_GREEN,                  0);

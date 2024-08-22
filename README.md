@@ -74,6 +74,12 @@ If you want to disable specific parts of clog, you can define some preprocessor 
 | --- | --- |
 | CLOG_NO_TIME | Disables timestamps for clog |
 
+## Assertions
+CLog offers its own assert macro, works just as well as any other.
+```C
+clog_assert(some_expr)
+```
+
 ## Formatting
 Just as some other logging libraries, this one also supports custom formatting of the output
 
