@@ -68,10 +68,14 @@ THE SOFTWARE.
 #define CLOG_COLOR_ITALIC     "\e[3m"
 
 #ifndef __FUNCTION_NAME__
-    #ifdef WIN32   //WINDOWS
-        #define __FUNCTION_NAME__   __FUNCTION__  
+    #ifdef WIN32   //WINDOWS 
+        #ifdef _MSC_VER
+            #define __FUNCTION_NAME__ __FUNCSIG__
+        #else
+            #define __FUNCTION_NAME__   __PRETTY_FUNCTION__ 
+        #endif //__MSC_VER
     #else          //*NIX
-        #define __FUNCTION_NAME__   __func__ 
+        #define __FUNCTION_NAME__   __PRETTY_FUNCTION__ 
     #endif
 #endif
 
