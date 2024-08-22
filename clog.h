@@ -252,7 +252,7 @@ void __clog(ClogLevel level, const char *file, int line, const char *func, const
                     len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%d", line);
                     break;
                 case 'F':
-                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s()", func);
+                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", func);
                     break;
                 default:
                     len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", c);
