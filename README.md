@@ -1,5 +1,4 @@
 ![CLog Logo](./img/logo.png)
-# CLog
 CLog is a simple STB-style header-only logging library for C and C++.
 
 ## Features:
