@@ -1,5 +1,5 @@
 <p align="center">
-<img src="./img/logo.png" style="display: block; margin: auto 0;" alt="CLog logo"/>
+<img src="./img/logo.svg" style="display: block; margin: auto 0;" alt="CLog logo"/>
 </p>
 
 <p style="text-align: center;" align="center">CLog is a simple STB-style header-only logging library for C and C++.</p>
