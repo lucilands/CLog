@@ -2,7 +2,7 @@
 <img src="./img/logo.png" style="display: block; margin: auto 0;" alt="CLog logo"/>
 </p>
 
-<p style="text-align: center;">CLog is a simple STB-style header-only logging library for C and C++.</p>
+<p style="text-align: center;" align="center">CLog is a simple STB-style header-only logging library for C and C++.</p>
 
 ## Features:
  - Flawlessly passes through valgrind
