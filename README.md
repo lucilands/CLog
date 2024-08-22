@@ -1,6 +1,8 @@
+<div style="text-align: center;">
 ![CLog Logo](./img/logo.png)
 
 CLog is a simple STB-style header-only logging library for C and C++.
+</div>
 
 ## Features:
  - Flawlessly passes through valgrind
