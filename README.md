@@ -30,6 +30,7 @@
 CLog work similarly to the stb libraries.
 Wherever you define ``CLOG_IMPLEMENTATION`` the functions will be defined.
 
+Otherwise, the functions will just be declared
 ```C
 #define CLOG_IMPLEMENTATION
 #include <clog.h>
