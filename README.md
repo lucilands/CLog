@@ -1,6 +1,8 @@
-![CLog Logo](./img/logo.png)
+<p align="center">
+<img src="./img/logo.svg" style="display: block; margin: auto 0;" alt="CLog logo"/>
+</p>
 
-CLog is a simple STB-style header-only logging library for C and C++.
+<p style="text-align: center;" align="center">CLog is a simple STB-style header-only logging library for C and C++.</p>
 
 ## Features:
  - Flawlessly passes through valgrind
@@ -28,6 +30,7 @@ CLog is a simple STB-style header-only logging library for C and C++.
 CLog work similarly to the stb libraries.
 Wherever you define ``CLOG_IMPLEMENTATION`` the functions will be defined.
 
+Otherwise, the functions will just be declared
 ```C
 #define CLOG_IMPLEMENTATION
 #include <clog.h>
