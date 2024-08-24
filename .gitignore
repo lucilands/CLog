@@ -10,3 +10,4 @@ test.c
 /dev
 /tests
 Makefile-Windows
+**.pdf
