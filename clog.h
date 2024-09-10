@@ -143,12 +143,12 @@ int __clog_errno = 0;
 
 FILE *clog_output_fd = 0;
 #ifndef CLOG_NO_TIME
-    const char *clog_fmt_default = "%t: %f:%l (%F) -> %c[%L]%r: %m";
-    char *clog_fmt = (char*)"%t: %f:%l (%F) -> %c[%L]%r: %m";
+    const char *clog_fmt_default = "%t: %f:%l (%F()) -> %c[%L]%r: %m";
+    char *clog_fmt = (char*)"%t: %f:%l (%F()) -> %c[%L]%r: %m";
     char *clog_time_fmt = (char*)"%h:%m:%s.%u";
 #else
-    const char *clog_fmt_default = (char*)"%f:%l (%F) -> %c[%L]%r: %m";
-    char *clog_fmt = (char*)"%f:%l (%F) -> %c[%L]%r: %m";
+    const char *clog_fmt_default = (char*)"%f:%l (%F()) -> %c[%L]%r: %m";
+    char *clog_fmt = (char*)"%f:%l (%F()) -> %c[%L]%r: %m";
 #endif
 
 size_t __clog_buffer_size(const char *fmt, va_list args) {
