@@ -23,8 +23,10 @@
  - Logging file info
  - Timestamps
 
-## Todo Features
- - Timestamps for MacOS
+# Why use CLog?
+CLog is an incredibly powerful and simple logging library.
+It is not overbloated with functions, only has whats required.
+Even with only aproximately 350 LOC, it is still able to offer features like customizable log output, customizable timestamps and custom log levels.
 
 # Usage
 CLog work similarly to the stb libraries.
