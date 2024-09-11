@@ -43,6 +43,7 @@ THE SOFTWARE.
 #endif // CLOG_NO_TIME
 #endif // CLOG_NO_TIME
 
+#ifndef _MSC_VER
 #define CLOG_COLOR_BLACK      "\e[30m"
 #define CLOG_COLOR_RED        "\e[31m"
 #define CLOG_COLOR_GREEN      "\e[32m"
@@ -63,14 +64,41 @@ THE SOFTWARE.
 #define CLOG_COLOR_WHITE_BG   "\e[47m"
 #define CLOG_COLOR_DEFAULT_BG "\e[49m"
 
+#define CLOG_COLOR_RESET      "\e[0m"
 #define CLOG_COLOR_BOLD       "\e[1m"
 #define CLOG_COLOR_FAINT      "\e[2m"
 #define CLOG_COLOR_ITALIC     "\e[3m"
+#else
+#define CLOG_COLOR_BLACK      "\x1b[30m"
+#define CLOG_COLOR_RED        "\x1b[31m"
+#define CLOG_COLOR_GREEN      "\x1b[32m"
+#define CLOG_COLOR_YELLOW     "\x1b[33m"
+#define CLOG_COLOR_BLUE       "\x1b[34m"
+#define CLOG_COLOR_MAGENTA    "\x1b[35m"
+#define CLOG_COLOR_CYAN       "\x1b[36m"
+#define CLOG_COLOR_WHITE      "\x1b[37m"
+#define CLOG_COLOR_DEFAULT    "\x1b[39m"
+
+#define CLOG_COLOR_BLACK_BG   "\x1b[40m"
+#define CLOG_COLOR_RED_BG     "\x1b[41m"
+#define CLOG_COLOR_GREEN_BG   "\x1b[42m"
+#define CLOG_COLOR_YELLOW_BG  "\x1b[43m"
+#define CLOG_COLOR_BLUE_BG    "\x1b[44m"
+#define CLOG_COLOR_MAGENTA_BG "\x1b[45m"
+#define CLOG_COLOR_CYAN_BG    "\x1b[46m"
+#define CLOG_COLOR_WHITE_BG   "\x1b[47m"
+#define CLOG_COLOR_DEFAULT_BG "\x1b[49m"
+
+#define CLOG_COLOR_RESET      "\x1b[0m"
+#define CLOG_COLOR_BOLD       "\x1b[1m"
+#define CLOG_COLOR_FAINT      "\x1b[2m"
+#define CLOG_COLOR_ITALIC     "\x1b[3m"
+#endif //_MSC_VER
 
 #ifndef __FUNCTION_NAME__
     #ifdef WIN32   //WINDOWS 
         #ifdef _MSC_VER
-            #define __FUNCTION_NAME__ __FUNCSIG__
+            #define __FUNCTION_NAME__ __func__
         #else
             #define __FUNCTION_NAME__   __PRETTY_FUNCTION__ 
         #endif //__MSC_VER
@@ -86,8 +114,12 @@ extern "C" {
 #ifndef CLOG_BUF_LIMIT
 #define CLOG_BUF_LIMIT 1024
 #endif
-#define CLOG_REGISTER_LEVEL(name_, color_, severity_) (const ClogLevel) {.name = name_, .color = color_, .severity = severity_}
 
+#ifdef _MSC_VER
+#define CLOG_REGISTER_LEVEL(name_, color_, severity_) {.name = name_, .color = color_, .severity = severity_}
+#else 
+#define CLOG_REGISTER_LEVEL(name_, color_, severity_) (const ClogLevel) {.name = name_, .color = color_, .severity = severity_}
+#endif //_MSC_VER
 
 typedef struct ClogLevel {
     const char *name;
@@ -236,7 +268,7 @@ void __clog(ClogLevel level, const char *file, int line, const char *func, const
                     break;
                 case 'r':
                     if (clog_output_fd == stdout || clog_output_fd == stderr) {
-                        len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "\e[0m");
+                        len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, CLOG_COLOR_RESET);
                     }
                     break;
                 case 'm':
@@ -269,7 +301,7 @@ void __clog(ClogLevel level, const char *file, int line, const char *func, const
 
 
         }
-        if (clog_output_fd == stdout || clog_output_fd == stderr) fprintf(clog_output_fd, "%s\e[0m\n", target);
+        if (clog_output_fd == stdout || clog_output_fd == stderr) fprintf(clog_output_fd, "%s%s\n", target, CLOG_COLOR_RESET);
         else fprintf(clog_output_fd, "%s\n", target);
         free(target);
     }
