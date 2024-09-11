@@ -223,6 +223,7 @@ void __clog(ClogLevel level, const char *file, int line, const char *func, const
             if (c == '%') {
             char c = clog_fmt[++i];
             char b[50];
+            size_t msg_len;
             memset(b, '\0', 50);
             switch (c) {
                 case 'c':
@@ -239,7 +240,7 @@ void __clog(ClogLevel level, const char *file, int line, const char *func, const
                     }
                     break;
                 case 'm':
-                    size_t msg_len = __clog_buffer_size(fmt, args);
+                    msg_len = __clog_buffer_size(fmt, args);
                     va_start(args, fmt);
                     len += __clog_vsprintf(target + len, len, CLOG_BUF_LIMIT, fmt, msg_len, args);
                     break;
