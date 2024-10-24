@@ -25,23 +25,12 @@ THE SOFTWARE.
 #ifndef _CLOG_H
 #define _CLOG_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#ifndef CLOG_NO_TIME
-#ifdef _WIN32
-#include <windows.h>
-#elif defined(__unix__)
-#include <time.h>
-#include <sys/time.h>
-#endif // _WIN32
-#else
+#if !(defined(_WIN32)) && !(defined(__unix__))
 #ifndef CLOG_NO_TIME
 #warning CLOG_TIME is not implemented for your operating system
 #define CLOG_NO_TIME
 #endif // CLOG_NO_TIME
-#endif // CLOG_NO_TIME
+#endif // _WIN32 || __unix__
 
 #ifndef _MSC_VER
 #define CLOG_COLOR_BLACK      "\e[30m"
@@ -145,6 +134,7 @@ extern const ClogLevel CLOG_WARNING;
 extern const ClogLevel CLOG_ERROR;
 extern const ClogLevel CLOG_FATAL;
 
+#include <stdio.h>
 
 extern FILE *clog_output_fd;
 extern char *clog_fmt;
@@ -162,6 +152,18 @@ void clog_get_timestamp(char *output) {(void)output;};
 #define clog_assert(expr) if (!(expr)) {clog(CLOG_FATAL, "Assertion failed!! "#expr" exiting..."); exit(1);}
 
 #ifdef CLOG_IMPLEMENTATION
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+#ifndef CLOG_NO_TIME
+#ifdef _WIN32
+#include <windows.h>
+#elif defined(__unix__)
+#include <time.h>
+#include <sys/time.h>
+#endif // _WIN32
+#endif //CLOG_NO_TIME
+
 const ClogLevel CLOG_DEBUG   = CLOG_REGISTER_LEVEL("DEBUG",   CLOG_COLOR_GREEN,                  0);
 const ClogLevel CLOG_TRACE   = CLOG_REGISTER_LEVEL("TRACE",   CLOG_COLOR_WHITE CLOG_COLOR_FAINT, 1);
 const ClogLevel CLOG_INFO    = CLOG_REGISTER_LEVEL("INFO",    CLOG_COLOR_WHITE,                  2);
