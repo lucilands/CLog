@@ -88,6 +88,23 @@ clog_assert(some_expr)
 ```
 There is also the ```clog_assert_m(expr, msg)``` macro, to make an assertion but also enables a customizable fail message.
 
+So the samme assertion can look different when it fails:
+```C 
+clog_assert(0 == 1);
+```
+Outputs
+```bash
+[FATAL] Assertion "0 == 1" failed!
+```
+However
+```C 
+clog_assert_m(0 == 1, "Zero does not equal one");
+```
+Outputs
+```bash
+[FATAL] Assertion "0 == 1" failed! Zero does not equal one
+```
+
 ## Formatting
 Just as some other logging libraries, this one also supports custom formatting of the output
 
