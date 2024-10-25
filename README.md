@@ -22,6 +22,7 @@
  - C99 Compatable
  - Logging file info
  - Timestamps
+ - Assertions
 
 # Why use CLog?
 CLog is an incredibly powerful and simple logging library.
@@ -85,6 +86,7 @@ CLog offers its own assert macro, works just as well as any other.
 ```C
 clog_assert(some_expr)
 ```
+There is also the ```clog_assert_m(expr, msg)``` macro, to make an assertion but also enables a customizable fail message.
 
 ## Formatting
 Just as some other logging libraries, this one also supports custom formatting of the output
