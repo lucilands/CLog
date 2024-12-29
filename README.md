@@ -162,7 +162,7 @@ All you have to do is to use the macro `CLOG_REGISTER_LEVEL` like this:
 ```C
 #include <clog.h>
 
-const ClogLevel MY_CLOG_LEVEL = CLOG_REGISTER_LEVEL("MyClogLevel", CLOG_COLOR_BOLD CLOG_COLOR_GREEN, 0)
+const ClogLevel MY_CLOG_LEVEL = CLOG_REGISTER_LEVEL("MyClogLevel", CLOG_COLOR_BOLD CLOG_COLOR_GREEN, CLOG_SEVERITY_DEBUG)
 ```
 
 Now, the parameters might look intimidating, but they are actually pretty simple! The parameters are:
