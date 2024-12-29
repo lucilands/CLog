@@ -170,6 +170,17 @@ Now, the parameters might look intimidating, but they are actually pretty simple
  - `const char *color` (The color the log gets colored. Use ansi escape characters here, or leave it blank for no color at all)
  - `const int severity` (The severity of the message, basically decides when its muted and when its not)
 
+There are 5 different severity levels, it is possible to use custom values but it is preferrable to use the predefined macros
+| Macro name | Value |
+| ---------- | ----- |
+| CLOG_SEVERITY_DEBUG   | 0 |
+| CLOG_SEVERITY_TRACE   | 1 |
+| CLOG_SEVERITY_INFO    | 2 |
+| CLOG_SEVERITY_WARNING | 3 |
+| CLOG_SEVERITY_ERROR   | 4 |
+| CLOG_SEVERITY_FATAL   | 5 |
+
+
 There are a couple colors that clog comes with, these are as follows
 | Color name | Description |
 | ---------- | ----------- |

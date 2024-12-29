@@ -84,6 +84,13 @@ THE SOFTWARE.
 #define CLOG_COLOR_ITALIC     "\x1b[3m"
 #endif //_MSC_VER
 
+#define CLOG_SEVERITY_DEBUG   0 
+#define CLOG_SEVERITY_TRACE   1 
+#define CLOG_SEVERITY_INFO    2 
+#define CLOG_SEVERITY_WARNING 3 
+#define CLOG_SEVERITY_ERROR   4
+#define CLOG_SEVERITY_FATAL   5
+
 #ifndef __FUNCTION_NAME__
     #ifdef WIN32   //WINDOWS 
         #ifdef _MSC_VER
@@ -165,12 +172,12 @@ void clog_get_timestamp(char *output) {(void)output;};
 #endif // _WIN32
 #endif //CLOG_NO_TIME
 
-const ClogLevel CLOG_DEBUG   = CLOG_REGISTER_LEVEL("DEBUG",   CLOG_COLOR_GREEN,                  0);
-const ClogLevel CLOG_TRACE   = CLOG_REGISTER_LEVEL("TRACE",   CLOG_COLOR_WHITE CLOG_COLOR_FAINT, 1);
-const ClogLevel CLOG_INFO    = CLOG_REGISTER_LEVEL("INFO",    CLOG_COLOR_WHITE,                  2);
-const ClogLevel CLOG_WARNING = CLOG_REGISTER_LEVEL("WARNING", CLOG_COLOR_YELLOW,                 3);
-const ClogLevel CLOG_ERROR   = CLOG_REGISTER_LEVEL("ERROR",   CLOG_COLOR_RED,                    4);
-const ClogLevel CLOG_FATAL   = CLOG_REGISTER_LEVEL("FATAL",   CLOG_COLOR_BOLD CLOG_COLOR_RED,    5);
+const ClogLevel CLOG_DEBUG   = CLOG_REGISTER_LEVEL("DEBUG",   CLOG_COLOR_GREEN,                  CLOG_SEVERITY_DEBUG);
+const ClogLevel CLOG_TRACE   = CLOG_REGISTER_LEVEL("TRACE",   CLOG_COLOR_WHITE CLOG_COLOR_FAINT, CLOG_SEVERITY_TRACE);
+const ClogLevel CLOG_INFO    = CLOG_REGISTER_LEVEL("INFO",    CLOG_COLOR_WHITE,                  CLOG_SEVERITY_INFO);
+const ClogLevel CLOG_WARNING = CLOG_REGISTER_LEVEL("WARNING", CLOG_COLOR_YELLOW,                 CLOG_SEVERITY_WARNING);
+const ClogLevel CLOG_ERROR   = CLOG_REGISTER_LEVEL("ERROR",   CLOG_COLOR_RED,                    CLOG_SEVERITY_ERROR);
+const ClogLevel CLOG_FATAL   = CLOG_REGISTER_LEVEL("FATAL",   CLOG_COLOR_BOLD CLOG_COLOR_RED,    CLOG_SEVERITY_FATAL);
 
 int clog_muted_level = -1;
 
