@@ -84,7 +84,7 @@ If you want to disable specific parts of clog, you can define some preprocessor 
 ## Assertions
 CLog offers its own assert macro, works just as well as any other.
 ```C
-clog_assert(some_expr)
+clog_assert(some_expr);
 ```
 There is also the ```clog_assert_m(expr, msg)``` macro, to make an assertion but also enables a customizable fail message.
 
