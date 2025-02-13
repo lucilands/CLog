@@ -88,7 +88,7 @@ clog_assert(some_expr);
 ```
 There is also the ```clog_assert_m(expr, msg)``` macro, to make an assertion but also enables a customizable fail message.
 
-So the samme assertion can look different when it fails:
+So the same assertion can look different when it fails:
 ```C 
 clog_assert(0 == 1);
 ```
