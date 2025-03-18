@@ -88,7 +88,7 @@ clog_assert(some_expr);
 ```
 There is also the ```clog_assert_m(expr, msg)``` macro, to make an assertion but also enables a customizable fail message.
 
-So the samme assertion can look different when it fails:
+So the same assertion can look different when it fails:
 ```C 
 clog_assert(0 == 1);
 ```
@@ -112,7 +112,6 @@ There are two ways for setting the format. You can eiter set the ```clog_fmt``` 
 
 The logger comes with an example format string already implemented:
 
-If you dont want too use timestamps in your project, even when the library supports it, you can define the ```CLOG_NO_TIME``` macro. This will disable all timestamp functionality from the library
 ```c
 "%t: %f:%l (%F) -> %c[%L]%r: %m"
 ```
@@ -131,8 +130,6 @@ If you dont want too use timestamps in your project, even when the library suppo
 ## Timestamps
 
 Timestamps are specified with the format character 't'.
-
-For now timestamps are only implemented for windows. The timestamps for Linux are on the way.
 
 ### Timestamp formatting
 
