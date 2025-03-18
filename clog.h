@@ -341,4 +341,4 @@ char *clog_get_timestamp() {
 }
 #endif //__cplusplus
 
-#endif //_CLOG_
+#endif //_CLOG_H
