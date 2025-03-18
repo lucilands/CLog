@@ -84,10 +84,10 @@ THE SOFTWARE.
 #define CLOG_COLOR_ITALIC     "\x1b[3m"
 #endif //_MSC_VER
 
-#define CLOG_SEVERITY_DEBUG   0 
-#define CLOG_SEVERITY_TRACE   1 
-#define CLOG_SEVERITY_INFO    2 
-#define CLOG_SEVERITY_WARNING 3 
+#define CLOG_SEVERITY_DEBUG   0
+#define CLOG_SEVERITY_TRACE   1
+#define CLOG_SEVERITY_INFO    2
+#define CLOG_SEVERITY_WARNING 3
 #define CLOG_SEVERITY_ERROR   4
 #define CLOG_SEVERITY_FATAL   5
 
@@ -114,14 +114,14 @@ extern "C" {
 #ifdef _MSC_VER
 #define CLOG_REGISTER_LEVEL(name_, color_, severity_) {.name = name_, .color = color_, .severity = severity_}
 #else 
-#define CLOG_REGISTER_LEVEL(name_, color_, severity_) (const ClogLevel) {.name = name_, .color = color_, .severity = severity_}
+#define CLOG_REGISTER_LEVEL(name_, color_, severity_) (const clog_level_t) {.name = name_, .color = color_, .severity = severity_}
 #endif //_MSC_VER
 
-typedef struct ClogLevel {
+typedef struct clog_level {
     const char *name;
     const char *color;
     const int severity;
-} ClogLevel;
+} clog_level_t;
 
 
 #define clog_mute_level(lvl) clog_muted_level = lvl.severity
@@ -133,13 +133,13 @@ typedef struct ClogLevel {
 
 #define clog(level, ...) __clog(level, __FILE__, __LINE__, __FUNCTION_NAME__, __VA_ARGS__)
 
-extern const ClogLevel CLOG_NONE;
-extern const ClogLevel CLOG_DEBUG;
-extern const ClogLevel CLOG_TRACE;
-extern const ClogLevel CLOG_INFO;
-extern const ClogLevel CLOG_WARNING;
-extern const ClogLevel CLOG_ERROR;
-extern const ClogLevel CLOG_FATAL;
+extern const clog_level_t CLOG_NONE;
+extern const clog_level_t CLOG_DEBUG;
+extern const clog_level_t CLOG_TRACE;
+extern const clog_level_t CLOG_INFO;
+extern const clog_level_t CLOG_WARNING;
+extern const clog_level_t CLOG_ERROR;
+extern const clog_level_t CLOG_FATAL;
 
 #include <stdio.h>
 
@@ -149,7 +149,7 @@ extern const char *clog_fmt_default;
 extern char *clog_time_fmt;
 extern int clog_muted_level;
 
-void __clog(ClogLevel level, const char *file, int line, const char *func, const char *fmt, ...);
+void __clog(clog_level_t level, const char *file, int line, const char *func, const char *fmt, ...);
 #ifndef CLOG_NO_TIME
 void clog_get_timestamp(char *output);
 #else
@@ -172,16 +172,16 @@ void clog_get_timestamp(char *output) {(void)output;};
 #endif // _WIN32
 #endif //CLOG_NO_TIME
 
-const ClogLevel CLOG_DEBUG   = CLOG_REGISTER_LEVEL("DEBUG",   CLOG_COLOR_GREEN,                  CLOG_SEVERITY_DEBUG);
-const ClogLevel CLOG_TRACE   = CLOG_REGISTER_LEVEL("TRACE",   CLOG_COLOR_WHITE CLOG_COLOR_FAINT, CLOG_SEVERITY_TRACE);
-const ClogLevel CLOG_INFO    = CLOG_REGISTER_LEVEL("INFO",    CLOG_COLOR_WHITE,                  CLOG_SEVERITY_INFO);
-const ClogLevel CLOG_WARNING = CLOG_REGISTER_LEVEL("WARNING", CLOG_COLOR_YELLOW,                 CLOG_SEVERITY_WARNING);
-const ClogLevel CLOG_ERROR   = CLOG_REGISTER_LEVEL("ERROR",   CLOG_COLOR_RED,                    CLOG_SEVERITY_ERROR);
-const ClogLevel CLOG_FATAL   = CLOG_REGISTER_LEVEL("FATAL",   CLOG_COLOR_BOLD CLOG_COLOR_RED,    CLOG_SEVERITY_FATAL);
+const clog_level_t CLOG_DEBUG   = CLOG_REGISTER_LEVEL("DEBUG",   CLOG_COLOR_GREEN,                  CLOG_SEVERITY_DEBUG);
+const clog_level_t CLOG_TRACE   = CLOG_REGISTER_LEVEL("TRACE",   CLOG_COLOR_WHITE CLOG_COLOR_FAINT, CLOG_SEVERITY_TRACE);
+const clog_level_t CLOG_INFO    = CLOG_REGISTER_LEVEL("INFO",    CLOG_COLOR_WHITE,                  CLOG_SEVERITY_INFO);
+const clog_level_t CLOG_WARNING = CLOG_REGISTER_LEVEL("WARNING", CLOG_COLOR_YELLOW,                 CLOG_SEVERITY_WARNING);
+const clog_level_t CLOG_ERROR   = CLOG_REGISTER_LEVEL("ERROR",   CLOG_COLOR_RED,                    CLOG_SEVERITY_ERROR);
+const clog_level_t CLOG_FATAL   = CLOG_REGISTER_LEVEL("FATAL",   CLOG_COLOR_BOLD CLOG_COLOR_RED,    CLOG_SEVERITY_FATAL);
 
 int clog_muted_level = -1;
 
-int __clog_errno = 0;
+int __clog_errno = 0;   
 
 FILE *clog_output_fd = 0;
 #ifndef CLOG_NO_TIME
@@ -244,7 +244,7 @@ size_t __clog_vsprintf(char *target, size_t cur_len, size_t max_len, const char 
 }
 
 
-void __clog(ClogLevel level, const char *file, int line, const char *func, const char *fmt, ...) {
+void __clog(clog_level_t level, const char *file, int line, const char *func, const char *fmt, ...) {
     if (level.severity > clog_muted_level) {
         __clog_errno = 0;
         va_list args;
