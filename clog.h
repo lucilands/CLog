@@ -265,16 +265,16 @@ void __clog(clog_level_t level, const char *file, int line, const char *func, co
         if (curchr == '%') {
             curchr = clog_fmt[++i];
             switch (curchr) {
-                case 'c': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, level.color); break;
-                case 'r': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, CLOG_COLOR_RESET); break;
-                case 'L': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, level.name); break;
-                case 'f': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, file); break;
-                case 'l': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%i", line); break;
-                case 't': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, clog_get_timestamp()); break;
-                case 'F': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, func); break;
-                case '%': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%"); break;
-                case 'm': len += __clog_vsprintf(target + len, len, CLOG_BUF_LIMIT, fmt, args); break;
-                default: clog_assert_m(0, "UNREACHABLE");
+                case 'c': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, level.color);            break;
+                case 'r': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, CLOG_COLOR_RESET);       break;
+                case 'L': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, level.name);             break;
+                case 'f': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, file);                   break;
+                case 'l': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%i", line);             break;
+                case 't': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, clog_get_timestamp());   break;
+                case 'F': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, func);                   break;
+                case '%': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%");                    break;
+                case 'm': len += __clog_vsprintf(target + len, len, CLOG_BUF_LIMIT, fmt, args);             break;
+                default: break;
             }
         }
         else {
@@ -319,19 +319,10 @@ char *clog_get_timestamp() {
         if (c == '%') {
             c = clog_time_fmt[++i];
             switch (c) {
-                case 'h':
-                    buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%02.2i", hour);
-                    break;
-                case 'm':
-                    buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%02.2i", minute);
-                    break;
-                case 's':
-                    buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%02.2i", second);
-                    break;
-                case 'u':
-                    buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%03.3lu", millisecond);
-                    break;
-
+                case 'h': buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%02.2i", hour);         break;
+                case 'm': buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%02.2i", minute);       break;
+                case 's': buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%02.2i", second);       break;
+                case 'u': buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%03.3lu", millisecond); break;
                 default: break;
             }
         }
