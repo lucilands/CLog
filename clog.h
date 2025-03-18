@@ -151,9 +151,9 @@ extern int clog_muted_level;
 
 void __clog(clog_level_t level, const char *file, int line, const char *func, const char *fmt, ...);
 #ifndef CLOG_NO_TIME
-void clog_get_timestamp(char *output);
+char *clog_get_timestamp();
 #else
-void clog_get_timestamp(char *output) {(void)output;};
+char *clog_get_timestamp() {return "";}
 #endif
 
 #define clog_assert(expr) if (!(expr)) {clog(CLOG_FATAL, "Assertion \""#expr"\" failed! exiting..."); exit(1);}
@@ -226,8 +226,10 @@ size_t __clog_sprintf(char *target, size_t cur_len, size_t max_len, const char *
 
 
 
-size_t __clog_vsprintf(char *target, size_t cur_len, size_t max_len, const char *fmt, size_t len, va_list args) {
+size_t __clog_vsprintf(char *target, size_t cur_len, size_t max_len, const char *fmt, va_list args) {
     if (__clog_errno == 1) return 0;
+
+    size_t len = __clog_buffer_size(fmt, args);
     if (cur_len + len >= max_len) {
         size_t ret = vsnprintf(target, max_len - cur_len - 5, fmt, args);
         strncat(target, "...", 4);
@@ -245,81 +247,47 @@ size_t __clog_vsprintf(char *target, size_t cur_len, size_t max_len, const char 
 
 
 void __clog(clog_level_t level, const char *file, int line, const char *func, const char *fmt, ...) {
-    if (level.severity > clog_muted_level) {
-        __clog_errno = 0;
-        va_list args;
-        va_start(args, fmt);
+    if (level.severity < clog_muted_level) return;
+    if (!clog_output_fd) clog_output_fd = stdout;
 
-        if (!clog_output_fd) clog_output_fd = stdout;
-        va_end(args);
-        va_start(args, fmt);
+    __clog_errno = 0;
 
+    char target[CLOG_BUF_LIMIT];
+    int len = 0;
 
-        char *target = malloc(CLOG_BUF_LIMIT);
-        memset(target, '\0', CLOG_BUF_LIMIT);
+    va_list args;
+    va_start(args, fmt);
 
-        size_t len = 0;
+    for (unsigned int i = 0; i < strlen(clog_fmt); i++) {
+        char curchr = clog_fmt[i];
 
-        for (size_t i = 0; i < strlen(clog_fmt); i++) {
-            char c = clog_fmt[i];
-            if (c == '%') {
-            char c = clog_fmt[++i];
-            char b[50];
-            size_t msg_len;
-            memset(b, '\0', 50);
-            switch (c) {
-                case 'c':
-                    if (clog_output_fd == stdout || clog_output_fd == stderr) {
-                        len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", level.color);
-                    }
-                    break;
-                case 'L':
-                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", level.name);
-                    break;
-                case 'r':
-                    if (clog_output_fd == stdout || clog_output_fd == stderr) {
-                        len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, CLOG_COLOR_RESET);
-                    }
-                    break;
-                case 'm':
-                    msg_len = __clog_buffer_size(fmt, args);
-                    va_start(args, fmt);
-                    len += __clog_vsprintf(target + len, len, CLOG_BUF_LIMIT, fmt, msg_len, args);
-                    break;
-                case '%':
-                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", '%');
-                    break;
-                case 'f':
-                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", file);
-                    break;
-                case 't':
-                    clog_get_timestamp(b);
-                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, b);
-                    break;
-                case 'l':
-                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%d", line);
-                    break;
-                case 'F':
-                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%s", func);
-                    break;
-                default:
-                    len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", c);
-                    break;
-                }
+        if (curchr == '%') {
+            curchr = clog_fmt[++i];
+            switch (curchr) {
+                case 'c': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, level.color); break;
+                case 'r': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, CLOG_COLOR_RESET); break;
+                case 'L': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, level.name); break;
+                case 'f': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, file); break;
+                case 'l': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%i", line); break;
+                case 't': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, clog_get_timestamp()); break;
+                case 'F': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, func); break;
+                case '%': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%"); break;
+                case 'm': len += __clog_vsprintf(target + len, len, CLOG_BUF_LIMIT, fmt, args); break;
+                default: clog_assert_m(0, "UNREACHABLE");
             }
-            else len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%c", c);
-
-
         }
-        if (clog_output_fd == stdout || clog_output_fd == stderr) fprintf(clog_output_fd, "%s%s\n", target, CLOG_COLOR_RESET);
-        else fprintf(clog_output_fd, "%s\n", target);
-        free(target);
+        else {
+            len += __clog_sprintf(target + len, 0, CLOG_BUF_LIMIT, "%c", curchr);
+        }
     }
+    if (clog_output_fd == stdout || clog_output_fd == stderr) fprintf(clog_output_fd, "%s%s\n", target, CLOG_COLOR_RESET);
+    else fprintf(clog_output_fd, "%s\n", target);
 }
 
+
 #ifndef CLOG_NO_TIME
-void clog_get_timestamp(char *output) {
-    char buf[50];
+char *clog_get_timestamp() {
+    char *buf = malloc(50);
     memset(buf, 0, 50);
 
     int buf_idx = 0;
@@ -372,7 +340,7 @@ void clog_get_timestamp(char *output) {
             buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%c", c);
         }
     }
-    strncat(output, buf, strlen(buf));
+    return buf;
 }
 
 
