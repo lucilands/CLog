@@ -181,7 +181,8 @@ const clog_level_t CLOG_FATAL   = CLOG_REGISTER_LEVEL("FATAL",   CLOG_COLOR_BOLD
 
 int clog_muted_level = -1;
 
-int __clog_errno = 0;   
+int __clog_errno = 0;
+char __clog_timebuf[50];
 
 FILE *clog_output_fd = 0;
 #ifndef CLOG_NO_TIME
@@ -287,9 +288,7 @@ void __clog(clog_level_t level, const char *file, int line, const char *func, co
 
 #ifndef CLOG_NO_TIME
 char *clog_get_timestamp() {
-    char *buf = malloc(50);
-    memset(buf, 0, 50);
-
+    memset(__clog_timebuf, 0, 50);
     int buf_idx = 0;
 
     int hour, minute, second = 0;
@@ -321,26 +320,26 @@ char *clog_get_timestamp() {
             c = clog_time_fmt[++i];
             switch (c) {
                 case 'h':
-                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%02.2i", hour);
+                    buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%02.2i", hour);
                     break;
                 case 'm':
-                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%02.2i", minute);
+                    buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%02.2i", minute);
                     break;
                 case 's':
-                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%02.2i", second);
+                    buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%02.2i", second);
                     break;
                 case 'u':
-                    buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%03.3lu", millisecond);
+                    buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%03.3lu", millisecond);
                     break;
 
                 default: break;
             }
         }
         else {
-            buf_idx += __clog_sprintf(buf + buf_idx, buf_idx, 50, "%c", c);
+            buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%c", c);
         }
     }
-    return buf;
+    return __clog_timebuf;
 }
 
 
