@@ -230,12 +230,15 @@ size_t __clog_sprintf(char *target, size_t cur_len, size_t max_len, const char *
 size_t __clog_vsprintf(char *target, size_t cur_len, size_t max_len, const char *fmt, va_list args) {
     if (__clog_errno == 1) return 0;
 
-    size_t len = __clog_buffer_size(fmt, args);
+    va_list args_for_size;
+    va_copy(args_for_size, args);
+    size_t len = __clog_buffer_size(fmt, args_for_size);
+    va_end(args_for_size);
+
     if (cur_len + len >= max_len) {
         size_t ret = vsnprintf(target, max_len - cur_len - 5, fmt, args);
         strncat(target, "...", 4);
         ret += 4;
-        va_end(args);
 
         __clog_errno = 1;
         return ret;
@@ -281,6 +284,8 @@ void __clog(clog_level_t level, const char *file, int line, const char *func, co
             len += __clog_sprintf(target + len, 0, CLOG_BUF_LIMIT, "%c", curchr);
         }
     }
+    va_end(args);
+
     if (clog_output_fd == stdout || clog_output_fd == stderr) fprintf(clog_output_fd, "%s%s\n", target, CLOG_COLOR_RESET);
     else fprintf(clog_output_fd, "%s\n", target);
 }
