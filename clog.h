@@ -33,30 +33,30 @@ THE SOFTWARE.
 #endif // _WIN32 || __unix__
 
 #ifndef _MSC_VER
-#define CLOG_COLOR_BLACK      "\e[30m"
-#define CLOG_COLOR_RED        "\e[31m"
-#define CLOG_COLOR_GREEN      "\e[32m"
-#define CLOG_COLOR_YELLOW     "\e[33m"
-#define CLOG_COLOR_BLUE       "\e[34m"
-#define CLOG_COLOR_MAGENTA    "\e[35m"
-#define CLOG_COLOR_CYAN       "\e[36m"
-#define CLOG_COLOR_WHITE      "\e[37m"
-#define CLOG_COLOR_DEFAULT    "\e[39m"
+#define CLOG_COLOR_BLACK      "\033[30m"
+#define CLOG_COLOR_RED        "\033[31m"
+#define CLOG_COLOR_GREEN      "\033[32m"
+#define CLOG_COLOR_YELLOW     "\033[33m"
+#define CLOG_COLOR_BLUE       "\033[34m"
+#define CLOG_COLOR_MAGENTA    "\033[35m"
+#define CLOG_COLOR_CYAN       "\033[36m"
+#define CLOG_COLOR_WHITE      "\033[37m"
+#define CLOG_COLOR_DEFAULT    "\033[39m"
 
-#define CLOG_COLOR_BLACK_BG   "\e[40m"
-#define CLOG_COLOR_RED_BG     "\e[41m"
-#define CLOG_COLOR_GREEN_BG   "\e[42m"
-#define CLOG_COLOR_YELLOW_BG  "\e[43m"
-#define CLOG_COLOR_BLUE_BG    "\e[44m"
-#define CLOG_COLOR_MAGENTA_BG "\e[45m"
-#define CLOG_COLOR_CYAN_BG    "\e[46m"
-#define CLOG_COLOR_WHITE_BG   "\e[47m"
-#define CLOG_COLOR_DEFAULT_BG "\e[49m"
+#define CLOG_COLOR_BLACK_BG   "\033[40m"
+#define CLOG_COLOR_RED_BG     "\033[41m"
+#define CLOG_COLOR_GREEN_BG   "\033[42m"
+#define CLOG_COLOR_YELLOW_BG  "\033[43m"
+#define CLOG_COLOR_BLUE_BG    "\033[44m"
+#define CLOG_COLOR_MAGENTA_BG "\033[45m"
+#define CLOG_COLOR_CYAN_BG    "\033[46m"
+#define CLOG_COLOR_WHITE_BG   "\033[47m"
+#define CLOG_COLOR_DEFAULT_BG "\033[49m"
 
-#define CLOG_COLOR_RESET      "\e[0m"
-#define CLOG_COLOR_BOLD       "\e[1m"
-#define CLOG_COLOR_FAINT      "\e[2m"
-#define CLOG_COLOR_ITALIC     "\e[3m"
+#define CLOG_COLOR_RESET      "\033[0m"
+#define CLOG_COLOR_BOLD       "\033[1m"
+#define CLOG_COLOR_FAINT      "\033[2m"
+#define CLOG_COLOR_ITALIC     "\033[3m"
 #else
 #define CLOG_COLOR_BLACK      "\x1b[30m"
 #define CLOG_COLOR_RED        "\x1b[31m"
@@ -92,14 +92,15 @@ THE SOFTWARE.
 #define CLOG_SEVERITY_FATAL   5
 
 #ifndef __FUNCTION_NAME__
-    #ifdef WIN32   //WINDOWS 
-        #ifdef _MSC_VER
-            #define __FUNCTION_NAME__ __func__
-        #else
-            #define __FUNCTION_NAME__   __PRETTY_FUNCTION__ 
-        #endif //__MSC_VER
-    #else          //*NIX
-        #define __FUNCTION_NAME__   __PRETTY_FUNCTION__ 
+    #if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || \
+        (defined(__cplusplus) && __cplusplus >= 201103L)
+        #define __FUNCTION_NAME__ __func__
+    #elif defined(_MSC_VER)
+        #define __FUNCTION_NAME__ __FUNCSIG__
+    #elif defined(__GNUC__) || defined(__clang__)
+        #define __FUNCTION_NAME__ __PRETTY_FUNCTION__
+    #else
+        #define __FUNCTION_NAME__ __FUNCTION__
     #endif
 #endif
 
@@ -111,11 +112,7 @@ extern "C" {
 #define CLOG_BUF_LIMIT 1024
 #endif
 
-#ifdef _MSC_VER
 #define CLOG_REGISTER_LEVEL(name_, color_, severity_) {.name = name_, .color = color_, .severity = severity_}
-#else 
-#define CLOG_REGISTER_LEVEL(name_, color_, severity_) (const clog_level_t) {.name = name_, .color = color_, .severity = severity_}
-#endif //_MSC_VER
 
 typedef struct clog_level {
     const char *name;
