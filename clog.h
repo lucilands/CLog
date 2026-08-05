@@ -267,8 +267,14 @@ void __clog(clog_level_t level, const char *file, int line, const char *func, co
         if (curchr == '%') {
             curchr = clog_fmt[++i];
             switch (curchr) {
-                case 'c': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, level.color);            break;
-                case 'r': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, CLOG_COLOR_RESET);       break;
+                case 'c': if (clog_output_fd == stdout || clog_output_fd == stderr) {
+                              len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, level.color);
+                          }
+                          break;
+                case 'r': if (clog_output_fd == stdout || clog_output_fd == stderr) {
+                              len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, CLOG_COLOR_RESET);
+                          }
+                          break;
                 case 'L': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, level.name);             break;
                 case 'f': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, file);                   break;
                 case 'l': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%i", line);             break;
