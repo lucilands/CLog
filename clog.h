@@ -159,6 +159,8 @@ char *clog_get_timestamp() {return "";}
 #define clog_assert(expr) if (!(expr)) {clog(CLOG_FATAL, "Assertion \""#expr"\" failed! exiting..."); exit(1);}
 #define clog_assert_m(expr, msg) if (!(expr)) {clog(CLOG_FATAL, "Assertion \""#expr"\" failed! %s", msg);exit(1);}
 
+#endif //_CLOG_H
+
 #ifdef CLOG_IMPLEMENTATION
 #include <stdlib.h>
 #include <string.h>
@@ -345,5 +347,3 @@ char *clog_get_timestamp() {
 #if defined(__cplusplus)
 }
 #endif //__cplusplus
-
-#endif //_CLOG_H
