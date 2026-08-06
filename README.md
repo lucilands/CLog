@@ -19,15 +19,15 @@
  - Custom formatting
  - Printf style formatting for log messages
  - Logging to an arbitrary file descriptor
- - C99 Compatable
+ - C99 Compatible
  - Logging file info
  - Timestamps
  - Assertions
 
 # Why use CLog?
 CLog is an incredibly powerful and simple logging library.
-It is not overbloated with functions, only has whats required.
-Even with only aproximately 350 LOC, it is still able to offer features like customizable log output, customizable timestamps and custom log levels.
+It is not overly bloated with functions, only has whats required.
+Even with only approximately 350 LoC, it is still able to offer features like customizable log output, customizable timestamps and custom log levels.
 
 # Usage
 CLog work similarly to the stb libraries.
@@ -108,7 +108,7 @@ Outputs
 ## Formatting
 Just as some other logging libraries, this one also supports custom formatting of the output
 
-There are two ways for setting the format. You can eiter set the ```clog_fmt``` variable to the format string you want, or, you can let the ```clog_set_fmt(fmt)``` macro do that for you.
+There are two ways for setting the format. You can either set the ```clog_fmt``` variable to the format string you want, or, you can let the ```clog_set_fmt(fmt)``` macro do that for you.
 
 The logger comes with an example format string already implemented:
 
@@ -117,8 +117,8 @@ The logger comes with an example format string already implemented:
 ```
 | Format prefix | Description |
 | --- | --- |
-| %c | The ansi color escape character for the color of the current level |
-| %r | The ansi color escape character to reset the color |
+| %c | The ANSI color escape character for the color of the current level |
+| %r | The ANSI color escape character to reset the color |
 | %m | The message that you provided |
 | %L | The log level string |
 | %f | The file from which the log was called |
@@ -147,7 +147,7 @@ The default format string for timing in CLog is:
 | %s | The current second |
 | %u | The current millisecond |
 
-## Max buffer lenght
+## Max buffer length
 Clog uses a buffer to construct the log message, the size of this buffer is defined in the macro `CLOG_BUF_LIMIT`.
 
 It defaults to 1024, but if you want to increase or decrease it, define it with your buffer size before you include.
