@@ -204,3 +204,12 @@ There are a couple colors that clog comes with, these are as follows
 | CLOG_COLOR_ITALIC     | Italic ANSI escape code                         |
 
 After this, you can just use it the same as you use any other CLog levels
+
+# Thread safety
+
+CLog's internal format, output file descriptor and time format are marked thread local meaning they are individual per-thread variables that can vary between threads.
+
+This means one thread may output to a separate file descriptor than another or may even have a different format than another. (Common uses are a 
+per-thread format with e.g. thread ID)
+
+Otherwise the common rules for dealing with multiple threads writing to the same file apply.

@@ -104,6 +104,12 @@ THE SOFTWARE.
     #endif
 #endif
 
+#ifdef _MSC_VER
+#define CLOG_THREAD_LOCAL __declspec(thread)
+#else
+#define CLOG_THREAD_LOCAL __thread
+#endif //_MSC_VER
+
 #if defined(__cplusplus)
 extern "C" {
 #endif //__cplusplus
@@ -140,10 +146,10 @@ extern const clog_level_t CLOG_FATAL;
 
 #include <stdio.h>
 
-extern FILE *clog_output_fd;
-extern char *clog_fmt;
+extern CLOG_THREAD_LOCAL FILE *clog_output_fd;
+extern CLOG_THREAD_LOCAL char *clog_fmt;
+extern CLOG_THREAD_LOCAL char *clog_time_fmt;
 extern const char *clog_fmt_default;
-extern char *clog_time_fmt;
 extern int clog_muted_level;
 
 void __clog(clog_level_t level, const char *file, int line, const char *func, const char *fmt, ...);
@@ -183,14 +189,14 @@ int clog_muted_level = -1;
 int __clog_errno = 0;
 char __clog_timebuf[50];
 
-FILE *clog_output_fd = 0;
+CLOG_THREAD_LOCAL FILE *clog_output_fd = 0;
 #ifndef CLOG_NO_TIME
     const char *clog_fmt_default = "%t: %f:%l (%F()) -> %c[%L]%r: %m";
-    char *clog_fmt = (char*)"%t: %f:%l (%F()) -> %c[%L]%r: %m";
-    char *clog_time_fmt = (char*)"%h:%m:%s.%u";
+    CLOG_THREAD_LOCAL char *clog_fmt = (char*)"%t: %f:%l (%F()) -> %c[%L]%r: %m";
+    CLOG_THREAD_LOCAL char *clog_time_fmt = (char*)"%h:%m:%s.%u";
 #else
     const char *clog_fmt_default = (char*)"%f:%l (%F()) -> %c[%L]%r: %m";
-    char *clog_fmt = (char*)"%f:%l (%F()) -> %c[%L]%r: %m";
+    CLOG_THREAD_LOCAL char *clog_fmt = (char*)"%f:%l (%F()) -> %c[%L]%r: %m";
 #endif
 
 size_t __clog_buffer_size(const char *fmt, va_list args) {
