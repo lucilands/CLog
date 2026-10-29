@@ -266,6 +266,23 @@ size_t __clog_vsprintf(char *target, size_t cur_len, size_t max_len, const char 
     }
 }
 
+size_t __clog_memcpy(char *target, size_t cur_len, size_t max_len, const char *data, size_t len) {
+    if (__clog_errno == 1) return 0;
+
+    if (cur_len + len >= max_len) {
+        size_t avail = max_len - cur_len;
+        size_t n = avail > 4 ? avail - 4 : 0;
+        memcpy(target, data, n);
+        memcpy(target + n, "...", avail > 4 ? 4 : avail);
+
+        __clog_errno = 1;
+        return max_len - cur_len + 4;
+    }
+
+    memcpy(target, data, len);
+    target[len] = '\0';
+    return len;
+}
 
 void __clog(clog_level_t level, const char *file, int line, const char *func, const char *fmt, ...) {
     if (level.severity < clog_muted_level) return;
@@ -279,6 +296,7 @@ void __clog(clog_level_t level, const char *file, int line, const char *func, co
     va_list args;
     va_start(args, fmt);
 
+    const char *timestamp = clog_get_timestamp();
     for (unsigned int i = 0; i < strlen(clog_fmt); i++) {
         char curchr = clog_fmt[i];
 
@@ -293,18 +311,18 @@ void __clog(clog_level_t level, const char *file, int line, const char *func, co
                               len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, CLOG_COLOR_RESET);
                           }
                           break;
-                case 'L': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, level.name);             break;
-                case 'f': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, file);                   break;
-                case 'l': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%i", line);             break;
-                case 't': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, clog_get_timestamp());   break;
-                case 'F': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, func);                   break;
-                case '%': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%");                    break;
-                case 'm': len += __clog_vsprintf(target + len, len, CLOG_BUF_LIMIT, fmt, args);             break;
+                case 'L': len += __clog_memcpy(target + len, len, CLOG_BUF_LIMIT, level.name, strlen(level.name)); break;
+                case 'f': len += __clog_memcpy(target + len, len, CLOG_BUF_LIMIT, file, strlen(file));             break;
+                case 'l': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%i", line);                    break;
+                case 't': len += __clog_memcpy(target + len, len, CLOG_BUF_LIMIT, timestamp, strlen(timestamp));   break;
+                case 'F': len += __clog_memcpy(target + len, len, CLOG_BUF_LIMIT, func, strlen(func));             break;
+                case '%': len += __clog_memcpy(target + len, len, CLOG_BUF_LIMIT, "%", 1);                         break;
+                case 'm': len += __clog_vsprintf(target + len, len, CLOG_BUF_LIMIT, fmt, args);                    break;
                 default: break;
             }
         }
         else {
-            len += __clog_sprintf(target + len, 0, CLOG_BUF_LIMIT, "%c", curchr);
+            len += __clog_memcpy(target + len, 0, CLOG_BUF_LIMIT, &curchr, 1);
         }
     }
     va_end(args);
