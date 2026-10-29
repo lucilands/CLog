@@ -158,7 +158,7 @@ extern int(*clog_callback)(const char *line);
 void __clog(clog_level_t level, const char *file, int line, const char *func, const char *fmt, ...);
 int clog_default_callback(const char *line);
 #ifndef CLOG_NO_TIME
-char *clog_get_timestamp();
+void clog_write_timestamp(char *target, size_t *len, size_t max_len);
 #else
 char *clog_get_timestamp() {return "";}
 #endif
@@ -189,9 +189,7 @@ const clog_level_t CLOG_ERROR   = CLOG_REGISTER_LEVEL("ERROR",   CLOG_COLOR_RED,
 const clog_level_t CLOG_FATAL   = CLOG_REGISTER_LEVEL("FATAL",   CLOG_COLOR_BOLD CLOG_COLOR_RED,    CLOG_SEVERITY_FATAL);
 
 int clog_muted_level = -1;
-
 int __clog_errno = 0;
-char __clog_timebuf[50];
 
 int(*clog_callback)(const char *line) = NULL;
 
@@ -291,12 +289,12 @@ void __clog(clog_level_t level, const char *file, int line, const char *func, co
     __clog_errno = 0;
 
     char target[CLOG_BUF_LIMIT];
-    int len = 0;
+    size_t len = 0;
 
     va_list args;
     va_start(args, fmt);
 
-    const char *timestamp = clog_get_timestamp();
+
     for (unsigned int i = 0; i < strlen(clog_fmt); i++) {
         char curchr = clog_fmt[i];
 
@@ -314,7 +312,7 @@ void __clog(clog_level_t level, const char *file, int line, const char *func, co
                 case 'L': len += __clog_memcpy(target + len, len, CLOG_BUF_LIMIT, level.name, strlen(level.name)); break;
                 case 'f': len += __clog_memcpy(target + len, len, CLOG_BUF_LIMIT, file, strlen(file));             break;
                 case 'l': len += __clog_sprintf(target + len, len, CLOG_BUF_LIMIT, "%i", line);                    break;
-                case 't': len += __clog_memcpy(target + len, len, CLOG_BUF_LIMIT, timestamp, strlen(timestamp));   break;
+                case 't': clog_write_timestamp(target, &len, CLOG_BUF_LIMIT);                                break;
                 case 'F': len += __clog_memcpy(target + len, len, CLOG_BUF_LIMIT, func, strlen(func));             break;
                 case '%': len += __clog_memcpy(target + len, len, CLOG_BUF_LIMIT, "%", 1);                         break;
                 case 'm': len += __clog_vsprintf(target + len, len, CLOG_BUF_LIMIT, fmt, args);                    break;
@@ -336,10 +334,7 @@ void __clog(clog_level_t level, const char *file, int line, const char *func, co
 
 
 #ifndef CLOG_NO_TIME
-char *clog_get_timestamp() {
-    memset(__clog_timebuf, 0, 50);
-    int buf_idx = 0;
-
+void clog_write_timestamp(char *target, size_t *len, size_t max_len) {
     int hour, minute, second = 0;
     unsigned long int millisecond = 0;
     #ifdef _WIN32
@@ -368,18 +363,17 @@ char *clog_get_timestamp() {
         if (c == '%') {
             c = clog_time_fmt[++i];
             switch (c) {
-                case 'h': buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%02.2i", hour);         break;
-                case 'm': buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%02.2i", minute);       break;
-                case 's': buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%02.2i", second);       break;
-                case 'u': buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%03.3lu", millisecond); break;
+                case 'h': *len += __clog_sprintf(target + *len, *len, max_len, "%02.2i", hour);         break;
+                case 'm': *len += __clog_sprintf(target + *len, *len, max_len, "%02.2i", minute);       break;
+                case 's': *len += __clog_sprintf(target + *len, *len, max_len, "%02.2i", second);       break;
+                case 'u': *len += __clog_sprintf(target + *len, *len, max_len, "%03.3lu", millisecond); break;
                 default: break;
             }
         }
         else {
-            buf_idx += __clog_sprintf(__clog_timebuf + buf_idx, buf_idx, 50, "%c", c);
+            *len += __clog_memcpy(target + *len, *len, max_len, &c, 1);
         }
     }
-    return __clog_timebuf;
 }
 
 
