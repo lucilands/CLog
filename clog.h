@@ -106,8 +106,10 @@ THE SOFTWARE.
 
 #ifdef _MSC_VER
 #define CLOG_THREAD_LOCAL __declspec(thread)
+#define CLOG_FORCE_INLINE __forceinline
 #else
 #define CLOG_THREAD_LOCAL __thread
+#define CLOG_FORCE_INLINE __attribute__((always_inline)) inline
 #endif //_MSC_VER
 
 #if defined(__cplusplus)
@@ -191,7 +193,7 @@ int clog_muted_level = -1;
 int __clog_errno = 0;
 char __clog_timebuf[50];
 
-int(*clog_callback)(const char *line) = clog_default_callback;
+int(*clog_callback)(const char *line) = NULL;
 
 CLOG_THREAD_LOCAL FILE *clog_output_fd = 0;
 #ifndef CLOG_NO_TIME
@@ -203,7 +205,7 @@ CLOG_THREAD_LOCAL FILE *clog_output_fd = 0;
     CLOG_THREAD_LOCAL char *clog_fmt = (char*)"%f:%l (%F()) -> %c[%L]%r: %m";
 #endif
 
-int clog_default_callback(const char *line) {
+CLOG_FORCE_INLINE int clog_default_callback(const char *line) {
     if (clog_output_fd == stdout || clog_output_fd == stderr) fprintf(clog_output_fd, "%s%s\n", line, CLOG_COLOR_RESET);
     else fprintf(clog_output_fd, "%s\n", line);
     return 0;
@@ -306,7 +308,9 @@ void __clog(clog_level_t level, const char *file, int line, const char *func, co
         }
     }
     va_end(args);
-    int res = clog_callback(target);
+    int res = 0;
+    if (!clog_callback) {res = clog_default_callback(target);}
+    else res = clog_callback(target);
     if (res) {
         clog_default_callback(target);
     }
