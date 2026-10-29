@@ -11,3 +11,5 @@ test.c
 /tests
 Makefile-Windows
 **.pdf
+compile_commands.json
+benchmark
