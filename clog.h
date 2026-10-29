@@ -339,22 +339,31 @@ void clog_write_timestamp(char *target, size_t *len, size_t max_len) {
     unsigned long int millisecond = 0;
     #ifdef _WIN32
         SYSTEMTIME t;
-        GetSystemTime(&t);
-        hour = t.wHour+1;
+        GetLocalTime(&t);
+        hour = t.wHour;
         minute = t.wMinute;
         second = t.wSecond;
         millisecond = t.wMilliseconds;
     #elif defined(__unix__)
-        time_t t = time(NULL);
-        struct tm *time = localtime(&t);
+        static CLOG_THREAD_LOCAL time_t cached_sec = (time_t)-1;
+        static CLOG_THREAD_LOCAL int cached_hour, cached_minute, cached_second;
 
-        struct timeval time_val;
-        gettimeofday(&time_val, NULL);
+        struct timeval tv;
+        gettimeofday(&tv, NULL);
 
-        hour = time->tm_hour;
-        minute = time->tm_min;
-        second = time->tm_sec;
-        millisecond = (time_val.tv_sec * 1000 + time_val.tv_usec / 1000) % 1000;
+        if (tv.tv_sec != cached_sec) {
+            time_t sec = tv.tv_sec;
+            struct tm *tm_info = localtime(&sec);
+            cached_hour = tm_info->tm_hour;
+            cached_minute = tm_info->tm_min;
+            cached_second = tm_info->tm_sec;
+            cached_sec = tv.tv_sec;
+        }
+
+        hour = cached_hour;
+        minute = cached_minute;
+        second = cached_second;
+        millisecond = tv.tv_usec / 1000;
     #endif
 
 
